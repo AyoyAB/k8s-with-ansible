@@ -1,0 +1,88 @@
+- debug: var=ansible_distribution_release
+- debug: var=ansible_distribution
+- debug: var=ansible_architecture
+- debug: var=ansible_lsb.id
+
+
+- name: Configure containerd modules startup
+  become: yes
+  template:
+    src: ./templates/containerd.conf
+    dest: /etc/modules-load.d/containerd.conf
+  register: modules
+
+#- name: Debug modules
+#  debug:
+#    var: modules
+
+- name: Restart after installing containerd
+  reboot: {}
+  when: modules.changed
+
+- name: Configure kubernetes cri startup
+  template:
+    src: ./templates/99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: Create containerd config directory
+  become: yes
+  file:
+    path: /etc/containerd
+    state: directory
+
+- name: Configure containerd
+  template:
+    src: ./templates/config.toml
+    dest: /etc/containerd/config.toml
+
+
+- name: Apply sys
+  command: sysctl --system
+
+
+- name: install dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    state: "present"
+
+- name: Add Docker apt key.
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+
+
+- name: Add Docker repository (Raspberry PI 32-bit)
+  when: ansible_architecture == "armv7l" and ansible_lsb.id == "Raspbian"
+  shell: echo "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
+
+- name: Add Docker repository (Raspberry PI 64-bit)
+  when: ansible_architecture == "aarch64" and ansible_lsb.id == "Raspbian"
+  shell: echo "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
+
+- name: Add Docker repository (amd64).
+  when: ansible_architecture == "x86_64" and not ansible_lsb.id == "Raspbian"
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable"
+    state: present
+    update_cache: true
+
+- name: Install containerd.io
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - containerd.io
+
+- name: Restart containerd
+  service:
+    name: containerd
+    state: restarted
+    enabled: yes

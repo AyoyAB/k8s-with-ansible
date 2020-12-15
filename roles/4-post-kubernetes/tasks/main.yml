@@ -1,0 +1,14 @@
+- name: Gathering facts
+  setup:
+
+- name: Check that the helm executable exists
+  stat:
+    path: /usr/local/bin/helm
+  register: stat_result
+
+- include_tasks: helm_install.yml
+  vars:
+    helm_version: "3.4.2"
+  when: not stat_result.stat.exists
+
+- include_tasks: helm.yml

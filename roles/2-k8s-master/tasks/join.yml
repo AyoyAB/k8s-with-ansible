@@ -1,0 +1,37 @@
+- name: secondary-master - Reset Kubernetes component
+  become: yes
+  shell: |
+    kubeadm reset \
+      --force
+  register: reset_cluster
+
+
+- debug: var=hostvars[groups['masters'][0]]['certificate_key'][0]
+
+# Certificate key is created by creating the first master
+- name: secondary-master - Join master to Kubernetes cluster
+  become: yes
+  when: reset_cluster is succeeded
+  shell: |
+    kubeadm join \
+      --discovery-token {{ join_token }} \
+      --discovery-token-unsafe-skip-ca-verification \
+      --control-plane \
+      --certificate-key {{ hostvars[groups['masters'][0]]['certificate_key'][0] }} \
+      --v=5 \
+      {{ groups['masters'][0] }}:6443
+  register: init_cluster
+  vars:
+    - join_token: "{{ token | default('abcdef.0123456789abcdef') }} "
+
+- debug: var=init_cluster
+
+- name: secondary-master - Enable and check kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: started
+    enabled: yes
+  become: yes
+  register: started_kubelet
+

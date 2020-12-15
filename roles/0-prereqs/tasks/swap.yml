@@ -1,0 +1,17 @@
+# This task disables swap for Kubernetes node (see https://github.com/kubernetes/kubernetes/pull/31996)
+- name: Disable swap 1
+  command: |
+    dphys-swapfile swapoff && \
+    dphys-swapfile uninstall && \
+    update-rc.d dphys-swapfile remove && \
+    systemctl disable dphys-swapfile
+  when: ansible_swaptotal_mb > 0
+
+- name: Disable swap 2
+  when:
+    - ansible_lsb.id == "Raspbian"
+  lineinfile:
+    path: /etc/dphys-swapfile
+    regexp: '^CONF_SWAPSIZE='
+    line: 'CONF_SWAPSIZE=0'
+

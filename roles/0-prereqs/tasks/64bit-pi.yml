@@ -1,0 +1,26 @@
+- debug: var=ansible_distribution_release
+- debug: var=ansible_distribution
+- debug: var=ansible_architecture
+- debug: var=ansible_lsb.id
+- debug: var=ansible_userspace_bits
+
+- name: config.txt add
+  lineinfile:
+    path: /boot/config.txt
+    state: present
+    line: 'arm_64bit=1'
+    insertafter: '[pi4]'
+  register: task_result
+
+- name: Reboot immediately if there was a change in config.txt
+  reboot:
+  when: task_result is changed
+
+- name: Upgrade to 64-bit Raspbian
+  when: task_result is changed
+  shell:
+    cmd: echo y | rpi-update
+
+- name: Reboot immediately if there was a change in config.txt
+  reboot:
+  when: task_result is changed

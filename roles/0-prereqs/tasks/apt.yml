@@ -1,0 +1,55 @@
+- name: Remove a number of packages
+  apt:
+    name: "{{ packages }}"
+    state: absent
+    autoclean: yes
+    autoremove: yes
+    purge: yes
+  vars:
+    packages:
+      - android-*
+      - androidsdk-*
+      - apache2
+      - apache2-*
+      - apertium
+      - apertium-*
+      - argonaut-*
+      - aspell
+      - aspell-*
+      - asterisk
+      - asterisk-*
+      - galculator
+      - geoip-database
+      - libreoffice-*
+      - minecraft-pi
+      - realvnc-vnc-server
+      - realvnc-vnc-viewer
+      - scratch
+      - scratch2
+      - sonic-pi
+      - wolfram-engine
+
+- name: Distribution upgrade
+  apt:
+    update_cache: yes
+    upgrade: dist
+  register: apt_dist_upgrade
+  when:
+    - ansible_lsb.id == "Raspbian"
+    - false == true
+
+- name: Reboot immediately after distribution upgrade to reload the kernel modules
+  reboot:
+  when:
+    - apt_dist_upgrade.changed
+    - ansible_lsb.id == "Raspbian"
+
+- name: Install network utilities such as ping
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - iputils-*
+      - jq
+      - tcpdump

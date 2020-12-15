@@ -1,0 +1,4 @@
+# This is the values file for the metrics server.
+rbac:
+  create: true
+  psp: true

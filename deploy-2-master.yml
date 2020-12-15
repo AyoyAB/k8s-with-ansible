@@ -1,0 +1,5 @@
+- hosts: "{{ hosts | default('masters') }}"
+  any_errors_fatal: true
+  roles:
+    - name: Create the cluster
+      role: 2-k8s-master

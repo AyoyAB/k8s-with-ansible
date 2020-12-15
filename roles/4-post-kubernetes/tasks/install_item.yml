@@ -1,0 +1,16 @@
+- name: Helm {{ chart_name }} - Fetch all dependencies
+  command: "helm dependency update ~/helm/{{ chart_name }}"
+
+- name: Helm {{ chart_name }} - Create namespace if not exist {{ create_namespace }}
+  include_tasks: create_namespace.yml
+  vars:
+    - namespace: "{{ chart_name }}"
+  when: create_namespace is true
+
+- name: Helm {{ chart_name }} - Install pre-namespaced dependencies
+  command: "helm upgrade -i {{ chart_name }} ~/helm/{{ chart_name }} -f ~/helm/{{ chart_name }}/values.yaml"
+  when: use_namespace is false
+
+- name: Helm {{ chart_name }} - Install namespaced dependencies
+  command: "helm -n {{ chart_name }} upgrade -i {{ chart_name }} ~/helm/{{ chart_name }} -f ~/helm/{{ chart_name }}/values.yaml"
+  when: use_namespace is true

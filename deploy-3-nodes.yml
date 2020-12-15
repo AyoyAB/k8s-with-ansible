@@ -1,0 +1,5 @@
+- hosts: "{{ hosts | default('nodes') }}"
+  any_errors_fatal: true
+  roles:
+    - name: Join the nodes to the cluster
+      role: 3-k8s-node

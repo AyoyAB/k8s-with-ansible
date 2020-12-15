@@ -1,0 +1,29 @@
+- name: Helm - Creates directory ~/helm
+  file:
+    path: ~/helm
+    state: directory
+
+- name: Helm - Copy over the helm files
+  copy:
+    src: ./templates/helm/
+    dest: ~/helm/
+
+- name: Helm - Install namespaced dependences
+  include_tasks: install_item.yml
+  vars:
+    - create_namespace: true
+    - use_namespace: true
+  loop_control:
+    loop_var: "chart_name"
+  with_items:
+    - "ingress-nginx"
+
+- name: Helm - Install pre-namespaced dependences
+  include_tasks: install_item.yml
+  vars:
+    - create_namespace: false
+    - use_namespace: false
+  loop_control:
+    loop_var: "chart_name"
+  with_items:
+    - "metrics-server"

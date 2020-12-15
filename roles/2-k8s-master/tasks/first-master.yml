@@ -1,0 +1,112 @@
+- name: first-master - Reset Kubernetes component
+  become: yes
+  shell: |
+    kubeadm reset \
+      --force
+  register: reset_cluster
+
+
+- name: first-master - Init Kubernetes cluster on first master
+  become: yes
+  when: reset_cluster is succeeded
+  shell: |
+    kubeadm init \
+      --service-cidr {{ service_cidr }} \
+      --kubernetes-version {{ kube_version }} \
+      --pod-network-cidr {{ pod_network_cidr }} \
+      --token {{ join_token }} \
+      --apiserver-advertise-address {{ master_ip }} \
+      --upload-certs \
+      --control-plane-endpoint {{ groups['masters'][0] }}:6443 \
+      {{ kubeadm_opts }} \
+      {{ init_opts }}
+  vars:
+    service_cidr:     "10.96.0.0/12"
+    kube_version:     "{{ kubernetes_version | default('stable-1') }}"
+    pod_network_cidr: "10.244.0.0/16"
+    master_ip:        "0.0.0.0"
+    kubeadm_opts:     "--token-ttl 0 "
+    init_opts:        ""
+    join_token:       "{{ token | default('abcdef.0123456789abcdef') }} "
+  register: init_cluster
+
+- debug: var=init_cluster.stdout_lines
+
+- set_fact:
+    certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"
+  vars:
+    regexp: '--certificate-key ([a-f0-9]*)'
+
+- debug: var=certificate_key
+
+- name: first-master - Create Kubernetes config directory
+  become: yes
+  file:
+    path: ".kube/"
+    state: directory
+
+- name: first-master - Copy admin.conf to Home directory
+  become: yes
+  when: init_cluster is succeeded
+  copy:
+    src: "{{ kubeadmin_config }}"
+    dest: ".kube/config"
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
+    mode: 0600
+    remote_src: true
+
+
+#- name: Deploy weave network into cluster
+#  become: false
+#  when: init_cluster is succeeded
+#  shell: |
+#    kubectl \
+#        apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+#  register: create_result
+#  until: create_result.rc == 0
+#  retries: 5
+#  delay: 2
+
+# Because of bug in weave the image isn't ARM
+# https://github.com/weaveworks/weave/issues/3842
+- name: first-master - Creates directory ~/weave-net
+  become: false
+  file:
+    path: ~/weave-net
+    state: directory
+
+- name: first-master - Copy over weave configuration
+  template:
+    src: ./templates/{{item}}
+    dest: ~/weave-net/{{item}}
+  with_items:
+    - weave.yaml
+
+- name: Deploy weave network into cluster
+  become: false
+  when: init_cluster is succeeded
+  shell: |
+    kubectl \
+        apply -f ~/weave-net/weave.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 5
+  delay: 2
+
+# Wait for the network to be installed before joining the other masters.
+- name: first-master - Wait for the network to be installed before joining the other masters.
+  pause:
+    seconds: 5
+
+- name: first-master - Wait for the network to be installed before joining the other masters.
+  shell: "kubectl -n kube-system get DaemonSet weave-net -o json | jq '.status.numberReady'"
+  register: numberReady
+  until: numberReady.stdout == "1"
+  retries: 12
+  delay: 10
+
+# Wait for the network to be installed before joining the other masters.
+- name: first-master - Wait for the network to be installed before joining the other masters.
+  pause:
+    seconds: 5

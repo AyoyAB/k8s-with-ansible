@@ -1,0 +1,41 @@
+- name: node - Check swap is disabled
+  fail: msg="Swap has to be disabled"
+  when: ansible_swaptotal_mb > 0
+
+- name: node - Check if kubeadm has already run (/etc/kubernetes/pki/ca.crt)
+  become: yes
+  stat:
+    path: "/etc/kubernetes/pki/ca.crt"
+  register: kubeadm_ca
+
+- debug: var=kubeadm_ca
+
+- name: node - Pull the Kubernetes images
+  become: yes
+  shell: |
+    kubeadm config images pull \
+      --kubernetes-version {{ kube_version }} \
+      {{ init_opts }}
+  vars:
+    kube_version: "{{ kubernetes_version | default('stable-1') }}"
+    init_opts: ""
+
+
+- name: node - Init cluster if needed
+  include_tasks: "join.yml"
+  when: not kubeadm_ca.stat.exists
+  vars:
+    - kubeadmin_config: /etc/kubernetes/admin.conf
+
+
+- name: node - Enable and check kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: started
+    enabled: yes
+  become: yes
+  register: started_kubelet
+
+- name: node - do facts module to get latest information
+  setup: {}

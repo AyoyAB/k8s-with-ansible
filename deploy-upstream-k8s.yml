@@ -1,0 +1,30 @@
+- hosts: all
+  any_errors_fatal: true
+  gather_facts: no
+- import_playbook: deploy-0-prereqs.yml
+  vars:
+    hosts: all
+
+
+- import_playbook: deploy-1-prek8s.yml
+  vars:
+    hosts: all
+    container_environment: "{{ container_env | default('docker') }}"
+
+
+- hosts: masters
+- import_playbook: deploy-2-master.yml
+  vars:
+    token: abcdef.0123456789abcdef
+    hosts: masters
+
+
+- hosts: nodes
+- import_playbook: deploy-3-nodes.yml
+  vars:
+    token: abcdef.0123456789abcdef
+    hosts: nodes
+
+
+- hosts: masters[0]
+- import_playbook: deploy-4-post-kubernetes.yml

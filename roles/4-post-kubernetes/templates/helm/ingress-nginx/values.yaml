@@ -1,0 +1,6 @@
+ingress-nginx:
+  enabled: true
+
+  podSecurityPolicy:
+    enabled: true
+

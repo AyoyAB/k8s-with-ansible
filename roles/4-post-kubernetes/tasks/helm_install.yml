@@ -1,0 +1,63 @@
+- debug:
+    var: ansible_system
+- debug:
+    var: ansible_os_family
+- debug:
+    var: ansible_architecture
+
+- name: Helm - Linux/amd64 Define helm_url
+  set_fact:
+    helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+  when: ansible_system == "Linux" and ansible_architecture == "x86_64"
+
+- name: Helm - Linux/arm64 Define helm_url
+  set_fact:
+    helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-arm64.tar.gz"
+  when: ansible_system == "Linux" and ansible_architecture == "aarch64"
+
+
+- name: Helm - Linux/arm Define helm_url
+  set_fact:
+    helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-arm.tar.gz"
+    helm_dir: "linux-arm"
+  when: ansible_system == "Linux" and ansible_architecture == "armv7l"
+
+- name: Helm - Check that helm_url has been defined
+  fail:
+    msg: "helm_url has not been defined."
+  when: helm_url is not defined
+
+- name: Helm - Check that helm_dir has been defined
+  fail:
+    msg: "helm_dir has not been defined."
+  when: helm_dir is not defined
+
+- name: Helm - Creates directory ~/helm
+  file:
+    path: ~/helm/unpack
+    state: directory
+
+- name: Helm - Download client
+  get_url:
+    dest: ~/helm/helm.tar.gz
+    url: "{{ helm_url }}"
+
+- name: Helm - Extract client
+  unarchive:
+    dest: ~/helm/unpack/
+    src: ~/helm/helm.tar.gz
+    remote_src: yes
+
+- name: account $HOME
+  shell: "echo $HOME"
+  register: account_homedir
+  changed_when: false
+  check_mode: no
+
+- name: Helm - Move executable to /usr/local/bin/helm
+  become: yes
+  copy:
+    src: "{{ account_homedir.stdout }}/helm/unpack/{{ helm_dir }}/helm"
+    dest: /usr/local/bin/helm
+    remote_src: yes
+    mode: 0755

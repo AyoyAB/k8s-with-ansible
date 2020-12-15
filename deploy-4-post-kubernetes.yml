@@ -1,0 +1,5 @@
+- hosts: "{{ hosts | default('masters[0]') }}"
+  any_errors_fatal: true
+  roles:
+    - name: Run post-kubernetes tasks
+      role: 4-post-kubernetes
