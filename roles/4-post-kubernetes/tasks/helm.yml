@@ -17,6 +17,7 @@
     loop_var: "chart_name"
   with_items:
     - "ingress-nginx"
+    - "cert-manager"
 
 - name: Helm - Install pre-namespaced dependences
   include_tasks: install_item.yml
