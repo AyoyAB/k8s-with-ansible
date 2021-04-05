@@ -8,6 +8,11 @@
     - ansible_os_family == 'Debian'
     - ansible_distribution == 'Ubuntu'
 
+# Added a dummy instruction for containerd installation for CentOS to remember that it doesn't work.
+- include_tasks: setup-CentOS.yml
+  when:
+    - ansible_distribution == "CentOS"
+
 - name: Copy images to pre-load
   ansible.builtin.copy:
     src: ./../../docker-images-to-pre-load/
