@@ -21,7 +21,8 @@
 - include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/cmdline.txt"
-  when: ansible_distribution != "Ubuntu"
+  when:
+    - ansible_lsb.id == "Raspbian"
 
 # Ubuntu is a special case which has their cmdline.txt in different places,
 # depending on if BT is enabled or not
@@ -54,7 +55,10 @@
 
 - include_tasks: "hostnames.yml"
 
+# TODO: Fix locale handling on CentOS
 - include_tasks: "locale.yml"
+  when:
+    - ansible_lsb.id == "Raspbian"
 
 - include_tasks: "wireless.yml"
   when:
@@ -69,7 +73,10 @@
   when:
     - ansible_distribution == "CentOS"
 
+# TODO: Fix ntp installation on CentOS
 - include_tasks: "ntp.yml"
+  when:
+    - ansible_lsb.id == "Raspbian"
 
 - name: do facts module to get latest information
   setup:
