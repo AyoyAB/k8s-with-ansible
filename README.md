@@ -28,5 +28,11 @@ Include the variable use_64bit.
 ansible-playbook -i hosts -v deploy-upstream-k8s.yml --extra-vars "ansible_become_pass=raspberry use_64bit=true"
 ```
 
+## Single master operation
+This repository is designed for running multiple dedicated 
+masters and nodes. If you are running a single-master setup,
+remember to remove the NoSchedule taint on the master.
 
+```bash
+kubectl taint node master1 node-role.kubernetes.io/master:NoSchedule-
 ```
