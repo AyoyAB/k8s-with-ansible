@@ -62,6 +62,12 @@
     # This really should be if there is a wireless network
 
 - include_tasks: "apt.yml"
+  when:
+    - ansible_lsb.id == "Raspbian"
+
+- include_tasks: "yum.yml"
+  when:
+    - ansible_distribution == "CentOS"
 
 - include_tasks: "ntp.yml"
 

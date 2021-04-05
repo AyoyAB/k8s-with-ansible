@@ -1,0 +1,17 @@
+- name: Install network utilities such as ping
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - iputils-*
+      - tcpdump
+      - epel-release
+
+- name: Install utilities such as jq
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - jq
