@@ -8,6 +8,10 @@
     - ansible_os_family == 'Debian'
     - ansible_distribution == 'Ubuntu'
 
+- include_tasks: setup-CentOS.yml
+  when:
+    - ansible_distribution == "CentOS"
+
 - name: Add {{ ansible_user }} to group docker
   user:
     name: "{{ ansible_user }}"

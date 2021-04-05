@@ -1,0 +1,52 @@
+- name: install dependencies
+  yum:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg2
+    state: "present"
+
+- debug: var=ansible_distribution_release
+- debug: var=ansible_distribution
+- debug: var=ansible_architecture
+- debug: var=ansible_lsb.id
+
+# TODO: Enable GPG signature verification
+- name: Add docker repository
+  yum_repository:
+    name: Docker
+    description: Docker
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    gpgcheck: no
+    gpgkey: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Install docker
+  yum:
+    update_cache: yes
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: "present"
+
+- name: Make /etc/docker directory
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Copy over the daemon configuration
+  template: src=./templates/daemon.json dest=/etc/docker/daemon.json
+  register: deamon_configured
+
+- debug: var=deamon_configured
+
+- name: Restart docker
+  when: deamon_configured.changed
+  service: name=docker state=restarted enabled=yes
+
+- name: Make /etc/systemd/system/docker.service.d directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
