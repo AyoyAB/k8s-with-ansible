@@ -1,0 +1,6 @@
+# This task disables swap for Kubernetes node (see https://github.com/kubernetes/kubernetes/pull/31996)
+# https://linuxize.com/post/how-to-add-swap-space-on-centos-7/
+- name: Disable swap 1
+  command: |
+    swapoff -a -v
+  when: ansible_swaptotal_mb > 0

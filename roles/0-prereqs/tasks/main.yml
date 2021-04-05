@@ -6,7 +6,13 @@
 - name: Gathering facts
   setup:
 
-- include_tasks: "swap.yml"
+- include_tasks: "swap-raspian.yml"
+  when:
+    - ansible_lsb.id == "Raspbian"
+
+- include_tasks: "swap-centos.yml"
+  when:
+    - ansible_distribution == "CentOS"
 
 - include_tasks: "expand-file-system.yml"
 
