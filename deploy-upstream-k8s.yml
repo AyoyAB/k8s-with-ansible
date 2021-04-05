@@ -6,11 +6,19 @@
     hosts: all
 
 
-- import_playbook: deploy-1-prek8s.yml
+- import_playbook: deploy-1-prek8s-apt.yml
   vars:
     hosts: all
     container_environment: "{{ container_env | default('docker') }}"
+  when:
+    - ansible_distribution == "Debian"
 
+- import_playbook: deploy-1-prek8s-yum.yml
+  vars:
+    hosts: all
+    container_environment: "{{ container_env | default('docker') }}"
+  when:
+    - ansible_distribution == "CentOS"
 
 - hosts: masters
 - import_playbook: deploy-2-master.yml

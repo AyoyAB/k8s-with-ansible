@@ -1,0 +1,52 @@
+- hosts: "{{ hosts | default('all') }}"
+  any_errors_fatal: true
+  remote_user: pi
+  become: true
+  gather_facts: no
+  roles:
+    - role: 1-install-docker
+      when:
+        - container_environment == "docker"
+
+    - role: 1-install-containerd
+      when:
+        - container_environment == "containerd"
+
+  tasks:
+    - name: Add Kubernetes repository
+      yum_repository:
+        name: Kubernetes
+        description: Kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        #http://yum.kubernetes.io/$releasever/$basearch/stable
+        gpgcheck: no
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+    - name: Install kubeadm and kubelet with version {{ kubernetes_version+'-*' }}
+      retries: 6
+      delay: 10
+      when:
+        - kubernetes_version is defined
+        - ansible_os_family == 'Debian'
+      yum:
+        update_cache: yes
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - kubeadm={{ kubernetes_version+'-*' }}
+          - kubelet={{ kubernetes_version+'-*' }}
+
+    - name: Install kubeadm and kubelet with latest version
+      retries: 6
+      delay: 10
+      when: kubernetes_version is not defined
+      yum:
+        update_cache: yes
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - kubeadm
+          - kubelet
+
