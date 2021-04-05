@@ -7,3 +7,7 @@ package redhat-lsb-core must be installed.
 ```
 yum -y install redhat-lsb-core
 ```
+Run visudo and add the following line:
+```
+pi      ALL=NOPASSWD: ALL
+```
