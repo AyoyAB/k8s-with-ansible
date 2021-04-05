@@ -28,14 +28,5 @@ Include the variable use_64bit.
 ansible-playbook -i hosts -v deploy-upstream-k8s.yml --extra-vars "ansible_become_pass=raspberry use_64bit=true"
 ```
 
-## Command to be run on Debian
-```bash
-apt-get install -y openssh-server
-systemctl enable ssh
-usermod -aG sudo pi
-```
 
-run visudo and add the following line
-```
-pi      ALL=NOPASSWD: ALL
 ```
