@@ -40,3 +40,7 @@
   become: yes
   register: started_kubelet
 
+- name: secondary-master - CentOS needs flushed iptables
+  include: centos-flush-iptables.yml
+  when:
+    - ansible_distribution == "CentOS"

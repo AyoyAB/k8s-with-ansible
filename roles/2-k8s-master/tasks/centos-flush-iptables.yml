@@ -1,0 +1,41 @@
+- name: CentOS - Stop kubelet
+  become: yes
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: stopped
+    enabled: yes
+
+- name: CentOS - Stop docker
+  become: yes
+  systemd:
+    name: docker
+    daemon_reload: yes
+    state: stopped
+    enabled: yes
+
+- name: CentOS - Flush iptables
+  become: true
+  shell: |
+    iptables --flush && \
+    iptables -tnat --flush
+
+- name: CentOS - Start docker
+  become: yes
+  systemd:
+    name: docker
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: CentOS - Start kubelet
+  become: yes
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: CentOS - Wait for everything to start up
+  pause:
+    seconds: 90

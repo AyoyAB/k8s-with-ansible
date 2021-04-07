@@ -115,3 +115,15 @@
 - name: first-master - Wait for the network to be installed before joining the other masters.
   pause:
     seconds: 5
+
+- name: first-master - CentOS needs flushed iptables
+  include: centos-flush-iptables.yml
+  when:
+    - ansible_distribution == "CentOS"
+
+- name: first-master - Make sure the DNS service has been started.
+  shell: "kubectl -n kube-system get deployment coredns -o json | jq --raw-output '.status.readyReplicas'"
+  register: numberReady
+  until: numberReady.stdout | int > 1
+  retries: 24
+  delay: 10

@@ -35,5 +35,10 @@
   become: yes
   register: started_kubelet
 
+- name: node - CentOS needs flushed iptables
+  include: centos-flush-iptables.yml
+  when:
+    - ansible_distribution == "CentOS"
+
 - name: node - do facts module to get latest information
   setup: {}
