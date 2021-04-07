@@ -36,3 +36,7 @@ remember to remove the NoSchedule taint on the master.
 ```bash
 kubectl taint node master1 node-role.kubernetes.io/master:NoSchedule-
 ```
+
+## Preloading images
+If any images are found in ~/pre-loaded-images/*.tar.gz
+they will be pre-loaded into docker.
