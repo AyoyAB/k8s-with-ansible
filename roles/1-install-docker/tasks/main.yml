@@ -13,4 +13,8 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: true
+  register: docker_user_added
 
+- name: Restart to let {{ ansible_user }} get its new group activated.
+  when: docker_user_added is changed
+  reboot:
