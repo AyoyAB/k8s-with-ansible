@@ -35,7 +35,9 @@
     state: directory
 
 - name: Copy over the daemon configuration
-  template: src=./templates/daemon.json dest=/etc/docker/daemon.json
+  template:
+    src: ./templates/daemon.json
+    dest: /etc/docker/daemon.json
   register: deamon_configured
 
 - debug: var=deamon_configured
