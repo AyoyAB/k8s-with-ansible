@@ -18,3 +18,20 @@
 - name: Restart to let {{ ansible_user }} get its new group activated.
   when: docker_user_added is changed
   reboot:
+
+- name: Copy images to pre-load
+  ansible.builtin.copy:
+    src: ./../../docker-images-to-pre-load/
+    dest: ~/pre-loaded-images/
+
+- name: master - pre-load images in ~/pre-loaded-images
+  shell: |
+    shopt -s nullglob
+    for f in ~/pre-loaded-images/*.tar.gz
+    do
+      echo "Processing $f file..."
+      # take action on each file. $f store current file name
+      docker load -i $f
+      rm $f
+    done
+

@@ -38,5 +38,6 @@ kubectl taint node master1 node-role.kubernetes.io/master:NoSchedule-
 ```
 
 ## Preloading images
-If any images are found in ~/pre-loaded-images/*.tar.gz
-they will be pre-loaded into docker.
+All *.tar.gz files found in docker-images-to-pre-load directory
+will be copied to all masters and nodes and pre-loaded into
+docker/containerd.

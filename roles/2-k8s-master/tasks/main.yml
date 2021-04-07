@@ -23,25 +23,6 @@
     kube_version: "{{ kubernetes_version | default('stable-1') }}"
     init_opts: ""
 
-- name: master - Check if any images to pre-load exist
-  stat:
-    path: ~/pre-loaded-images
-  register: preload_dir
-
-- name: master - pre-load images in ~/pre-loaded-images
-  when:
-    - preload_dir.stat.exists
-    - preload_dir.stat.isdir
-    - container_environment == "docker"
-  shell: |
-    shopt -s nullglob
-    for f in ~/pre-loaded-images/*.tar.gz
-    do
-      echo "Processing $f file..."
-      # take action on each file. $f store current file name
-      docker load -i $f
-    done
-
 - debug: var=groups['masters'][0]
 
 

@@ -7,3 +7,19 @@
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution == 'Ubuntu'
+
+- name: Copy images to pre-load
+  ansible.builtin.copy:
+    src: ./../../docker-images-to-pre-load/
+    dest: ~/pre-loaded-images/
+
+- name: master - pre-load images in ~/pre-loaded-images
+  shell: |
+    shopt -s nullglob
+    for f in ~/pre-loaded-images/*.tar.gz
+    do
+      echo "Processing $f file..."
+      # take action on each file. $f store current file name
+      ctr -n=k8s.io image import $f
+      rm $f
+    done
