@@ -20,13 +20,11 @@
     kube_version: "{{ kubernetes_version | default('stable-1') }}"
     init_opts: ""
 
-
 - name: node - Init cluster if needed
   include_tasks: "join.yml"
   when: not kubeadm_ca.stat.exists
   vars:
     - kubeadmin_config: /etc/kubernetes/admin.conf
-
 
 - name: node - Enable and check kubelet service
   systemd:

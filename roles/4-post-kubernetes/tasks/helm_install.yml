@@ -54,7 +54,7 @@
   changed_when: false
   check_mode: no
 
-- name: Helm - Move executable to /usr/local/bin/helm
+- name: Helm - Move executable to {{ account_homedir.stdout }}/helm/unpack/{{ helm_dir }}/helm
   become: yes
   copy:
     src: "{{ account_homedir.stdout }}/helm/unpack/{{ helm_dir }}/helm"

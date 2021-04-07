@@ -100,7 +100,7 @@
   delay: 2
 
 # Wait for the network to be installed before joining the other masters.
-- name: first-master - Wait for the network to be installed before joining the other masters.
+- name: first-master - Wait for 5 seconds before checking if the network is ok.
   pause:
     seconds: 5
 

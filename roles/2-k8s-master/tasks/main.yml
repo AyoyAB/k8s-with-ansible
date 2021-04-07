@@ -51,7 +51,6 @@
   run_once: yes
   vars:
     - kubeadmin_config: /etc/kubernetes/admin.conf
-    - enable_dashboard: true
 
 
 
