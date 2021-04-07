@@ -8,7 +8,7 @@
 
 - include_tasks: helm_install.yml
   vars:
-    helm_version: "3.4.2"
+    helm_version: "3.5.3"
   when: not stat_result.stat.exists
 
 - include_tasks: helm.yml
