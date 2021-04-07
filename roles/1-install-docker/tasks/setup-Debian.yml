@@ -63,14 +63,19 @@
     state: directory
 
 - name: Copy over the daemon configuration
-  template: src=./templates/daemon.json dest=/etc/docker/daemon.json
+  template:
+    src: ./templates/daemon.json
+    dest: /etc/docker/daemon.json
   register: deamon_configured
 
 - debug: var=deamon_configured
 
 - name: Restart docker
   when: deamon_configured.changed
-  service: name=docker state=restarted enabled=yes
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
 
 - name: Make /etc/systemd/system/docker.service.d directory
   file:
