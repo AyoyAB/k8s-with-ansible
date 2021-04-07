@@ -1,9 +1,16 @@
-- name: Reset Kubernetes component
+- name: node - Reset Kubernetes component
   become: yes
   shell: "kubeadm reset --force"
   register: reset_cluster
 
-- name: Init Kubernetes cluster
+- name: node - Flush iptables
+  become: true
+  shell: |
+    iptables --flush && \
+    iptables -tnat --flush
+  when: not kubeadm_ca.stat.exists
+
+- name: node - Init Kubernetes cluster
   become: yes
   when: reset_cluster is succeeded
   shell: |

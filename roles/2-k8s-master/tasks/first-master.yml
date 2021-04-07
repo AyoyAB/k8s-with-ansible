@@ -5,6 +5,11 @@
       --force
   register: reset_cluster
 
+- name: first-master - Flush iptables
+  become: true
+  shell: |
+    iptables --flush && \
+    iptables -tnat --flush
 
 - name: first-master - Init Kubernetes cluster on first master
   become: yes

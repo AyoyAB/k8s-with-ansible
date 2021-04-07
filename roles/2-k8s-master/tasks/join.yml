@@ -5,6 +5,11 @@
       --force
   register: reset_cluster
 
+- name: secondary-master - Flush iptables
+  become: true
+  shell: |
+    iptables --flush && \
+    iptables -tnat --flush
 
 - debug: var=hostvars[groups['masters'][0]]['certificate_key'][0]
 
