@@ -108,7 +108,7 @@
   shell: "kubectl -n kube-system get DaemonSet weave-net -o json | jq '.status.numberReady'"
   register: numberReady
   until: numberReady.stdout == "1"
-  retries: 12
+  retries: 24
   delay: 10
 
 # Wait for the network to be installed before joining the other masters.
