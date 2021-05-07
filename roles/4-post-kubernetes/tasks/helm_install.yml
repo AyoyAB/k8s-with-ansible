@@ -8,6 +8,7 @@
 - name: Helm - Linux/amd64 Define helm_url
   set_fact:
     helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+    helm_dir: "linux-amd64"
   when: ansible_system == "Linux" and ansible_architecture == "x86_64"
 
 - name: Helm - Linux/arm64 Define helm_url
