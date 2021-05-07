@@ -88,7 +88,7 @@
   with_items:
     - weave.yaml
 
-- name: Deploy weave network into cluster
+- name: first-master - Deploy weave network into cluster
   become: false
   when: init_cluster is succeeded
   shell: |
