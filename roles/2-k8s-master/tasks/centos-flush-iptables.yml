@@ -1,3 +1,12 @@
+- name: Install network utility netcat
+  become: yes
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - netcat
+
 - name: CentOS - Stop kubelet
   become: yes
   systemd:
@@ -36,6 +45,22 @@
     state: started
     enabled: yes
 
-- name: CentOS - Wait for everything to start up
+- name: CentOS - Wait five seconds before checking for everything is up
   pause:
-    seconds: 90
+    seconds: 5
+
+- name: CentOS - Wait for everything to start up
+  shell: "nc -z localhost 6443"
+  register: connection
+  ignore_errors: yes
+
+- debug:
+    var: connection
+
+- name: CentOS - Wait for everything to start up
+  shell: "nc -z localhost 6443"
+  ignore_errors: yes
+  register: connection
+  until: connection.rc == 0
+  retries: 12
+  delay: 10
