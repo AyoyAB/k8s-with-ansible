@@ -16,12 +16,13 @@
     helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-arm64.tar.gz"
   when: ansible_system == "Linux" and ansible_architecture == "aarch64"
 
-
 - name: Helm - Linux/arm Define helm_url
   set_fact:
     helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-arm.tar.gz"
     helm_dir: "linux-arm"
   when: ansible_system == "Linux" and ansible_architecture == "armv7l"
+
+
 
 - name: Helm - Check that helm_url has been defined
   fail:
