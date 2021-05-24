@@ -1,0 +1,11 @@
+- name: Prometheus - Add prometheus-community chart repo
+  community.kubernetes.helm_repository:
+    name: prometheus-community
+    repo_url: "https://kubernetes.github.io/ingress-nginx"
+
+- name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+  community.kubernetes.helm:
+    name: prometheus
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_namespace: monitoring
+    create_namespace: true

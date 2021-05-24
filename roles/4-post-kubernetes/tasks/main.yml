@@ -12,3 +12,5 @@
   when: not stat_result.stat.exists
 
 - include_tasks: helm.yml
+
+- include_tasks: prometheus.yaml

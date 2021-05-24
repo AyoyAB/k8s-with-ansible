@@ -19,12 +19,12 @@
     - "ingress-nginx"
     - "cert-manager"
 
-- name: Helm - Install pre-namespaced dependences
-  include_tasks: install_item.yml
-  vars:
-    - create_namespace: false
-    - use_namespace: false
-  loop_control:
-    loop_var: "chart_name"
-  with_items:
-    - "metrics-server"
+#- name: Helm - Install pre-namespaced dependences
+#  include_tasks: install_item.yml
+#  vars:
+#    - create_namespace: false
+#    - use_namespace: false
+#  loop_control:
+#    loop_var: "chart_name"
+#  with_items:
+#    - "metrics-server"

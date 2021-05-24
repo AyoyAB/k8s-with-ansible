@@ -41,3 +41,14 @@ kubectl taint node master1 node-role.kubernetes.io/master:NoSchedule-
 All *.tar.gz files found in docker-images-to-pre-load directory
 will be copied to all masters and nodes and pre-loaded into
 docker/containerd.
+
+## Prometheus & Grafana
+This repo uses prometheus operator. 
+
+To view grafana, run the following command:
+```shell
+kubectl -n monitoring port-forward svc/prometheus-grafana 8080:80
+```
+
+default username/password is admin/prom-operator.
+
