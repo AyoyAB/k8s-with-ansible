@@ -2,6 +2,7 @@
   any_errors_fatal: true
   gather_facts: no
 
+- import_playbook: validate_dns.yml
 
 - import_playbook: deploy-1-prek8s.yml
   vars:
