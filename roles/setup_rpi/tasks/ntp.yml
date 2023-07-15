@@ -1,5 +1,5 @@
 - name: set timezone to Central Europe
-  timezone:
+  community.general.timezone:
     name: Europe/Stockholm
 
 - name: Install ntp
@@ -13,31 +13,34 @@
 
 - name: Copy over the NTP configuration
   template: src=./templates/ntp.conf dest=/etc/ntp.conf
+  register: ntp_status
 
-- name: Make ntp /etc/ntp/crypto/pw directory
+- name: Make ntp directories
   file:
-    path: /etc/ntp/crypto/pw
+    path: "{{ item }}"
     state: directory
     owner: root
     group: root
-
-
-- name: Make ntp /etc/ntp/keys directory
-  file:
-    path: /etc/ntp/keys
-    state: directory
-    owner: root
-    group: root
+  with_items:
+    - /etc/ntp/crypto/pw
+    - /etc/ntp/keys
 
 
 - name: Make sure NTP is stopped
-  service: name=ntp state=stopped enabled=yes
+  service:
+    name: ntp
+    state: stopped
+    enabled: yes
+  when: ntp_status.changed
 
 
 - name: Sync time initialy
   shell: ntpd -gq
+  when: ntp_status.changed
 
 
 - name: Make sure NTP is started up
-  service: name=ntp state=started enabled=yes
-
+  service:
+    name: ntp
+    state: started
+    enabled: yes

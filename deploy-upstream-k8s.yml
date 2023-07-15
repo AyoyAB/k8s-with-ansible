@@ -1,15 +1,14 @@
 - hosts: all
   any_errors_fatal: true
   gather_facts: no
-- import_playbook: deploy-0-prereqs.yml
-  vars:
-    hosts: all
 
 
 - import_playbook: deploy-1-prek8s.yml
   vars:
     hosts: all
     container_environment: "{{ container_env | default('docker') }}"
+
+- import_playbook: setup_rpi.yml
 
 
 - hosts: masters

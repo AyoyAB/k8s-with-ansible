@@ -1,0 +1,15 @@
+- name: Test for entry in cmdline.txt "{{ item }}"
+  command: 'grep "{{ item }}" {{ cmdline }}'
+  register: test_grep1
+  ignore_errors: yes
+
+- name: Add entry to cmdline "{{ item }}"
+  lineinfile:
+    path: "{{ cmdline }}"
+    backrefs: True
+    state: present
+    regexp: '(.*)$'
+    line: '\1 {{ item }}'
+  when: test_grep1.stdout == ""
+  register: task_result
+  notify: Reboot

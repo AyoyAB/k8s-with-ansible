@@ -1,3 +1,6 @@
+- debug:
+    var: hosts
+
 - name: Wait 300 seconds for target connection to become reachable/usable
   wait_for_connection:
     delay: 0
@@ -27,22 +30,7 @@
     - cmdline: "/boot/firmware/btcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
-# There is beta support for updating the kernel on Raspberry to 64-bit
-- name: Upgrade to 64-bit kernel on Raspberry Buster
-  include_tasks: "64bit-pi.yml"
-  when:
-    - use_64bit is defined
-    - ansible_distribution_release == "buster"
-    - ansible_architecture == "armv7l"
-    - ansible_lsb.id == "Raspbian"
-    - ansible_userspace_bits == "32"
-
 - include_tasks: "ssh.yml"
-
-- name: Set password
-  user:
-    name: "{{ ansible_user }}"
-    password: "{{ password }}"
 
 - include_tasks: "hostnames.yml"
 
@@ -59,3 +47,4 @@
 
 - name: do facts module to get latest information
   setup:
+

@@ -6,7 +6,7 @@
   ignore_errors: yes
 
 - name: Ensure a locale exists
-  locale_gen:
+  community.general.locale_gen:
     name: en_GB.UTF-8
     state: present
 

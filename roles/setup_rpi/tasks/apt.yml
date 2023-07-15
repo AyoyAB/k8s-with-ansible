@@ -1,0 +1,11 @@
+- name: Install utilities such as ping
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - bash-completion
+      - bind9-dnsutils
+      - iputils-*
+      - jq
+      - tcpdump

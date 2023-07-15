@@ -1,0 +1,8 @@
+- hosts: "{{ hosts | default('all') }}"
+  any_errors_fatal: true
+  become: true
+  gather_facts: no
+  roles:
+    - role: setup_rpi
+      vars:
+        hosts: rpis

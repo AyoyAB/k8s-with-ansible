@@ -5,6 +5,7 @@
     regexp: 'REGDOMAIN='
     replace: 'REGDOMAIN=SE'
   ignore_errors: yes
+
 - name: regdomain
   replace:
     destfile: /lib/crda/setregdomain

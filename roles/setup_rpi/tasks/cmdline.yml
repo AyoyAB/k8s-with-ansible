@@ -1,0 +1,21 @@
+- name: Check if {{ cmdline }} exists
+  stat:
+    path: "{{ cmdline }}"
+  register: cmdlinetxt
+
+- name: Create file if needed
+  when: not cmdlinetxt.stat.exists
+  fail:
+    msg: "There is no {{ cmdline }} file."
+
+- name: Check for entries in cmdline.txt
+  include_tasks: cmdline-part.yml
+  with_items:
+    - "cgroup_enable=cpuset"
+    - "cgroup_enable=memory"
+    - "cgroup_enable=hugetlb"
+    - "cgroup_memory=1"
+    - "swapaccount=1"
+
+- name: Flush handlers
+  meta: flush_handlers

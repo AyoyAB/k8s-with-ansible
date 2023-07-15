@@ -15,7 +15,7 @@
       ControlPersist 448h
 
 - name: Set authorized SSH key taken from local file
-  authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ ansible_user }}"
     state: present
     key: "{{ lookup('file', '/Users/john/.ssh/id_ansible.pub') }}"
