@@ -16,16 +16,17 @@
   when: inventory_hostname in groups['infras']
 
 - import_playbook: deploy-2-master.yml
+  when:
+    - inventory_hostname in groups['masters']
   vars:
     token: abcdef.0123456789abcdef
-    hosts: masters
 
 
-- hosts: nodes
 - import_playbook: deploy-3-nodes.yml
+  when:
+    - inventory_hostname in groups['workers']
   vars:
     token: abcdef.0123456789abcdef
-    hosts: nodes
 
 
 - hosts: masters[0]

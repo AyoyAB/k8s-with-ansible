@@ -1,0 +1,4 @@
+---
+ansible_user: k8s
+ansible_password: password
+ansible_ssh_pass: password
