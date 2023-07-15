@@ -1,0 +1,9 @@
+- hosts: "{{ hosts | default('infras') }}"
+  any_errors_fatal: true
+  become: true
+  gather_facts: no
+  roles:
+    - role: lbs_install
+      when: inventory_hostname in groups['infras']
+    - role: lbs_loadbalancer
+      when: inventory_hostname in groups['infras']

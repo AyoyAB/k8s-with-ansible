@@ -1,0 +1,82 @@
+global
+  log /dev/log  local0
+  log /dev/log  local1 notice
+  chroot        /var/lib/haproxy
+  stats socket  /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+  stats timeout 30s
+  user          haproxy
+  group         haproxy
+  daemon
+
+defaults
+  mode                    http
+  log                     global
+  option                  dontlognull
+  option                  http-server-close
+  option                  redispatch
+  retries                 3
+  timeout http-request    10s
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout http-keep-alive 10s
+  timeout check           10s
+  maxconn                 3000
+
+frontend stats
+  bind    *:1936
+  mode    http
+  log     global
+  maxconn 10
+  stats   enable
+  stats   hide-version
+  stats   refresh 30s
+  stats   show-node
+  stats   show-desc Stats for {{ inventory_hostname }}
+  stats   auth {{ haproxy_stats_username }}:{{ haproxy_stats_password }}
+  stats   uri /stats
+
+listen api-server-6443
+  bind *:6443
+  # Reference: https://kvaps.medium.com/for-make-this-scheme-more-safe-you-can-add-haproxy-layer-between-keepalived-and-kube-apiservers-62c344283076
+  # Use readyz endpoint for health probes.
+  option  httpchk GET /readyz HTTP/1.0
+  option  log-health-checks
+  http-check expect status 200
+  mode tcp
+
+  # the default parameters for the server. Reference: http://cbonte.github.io/haproxy-dconv/2.0/configuration.html
+  # verify none   disable SSL verification, which is needed to connect to newly created clusters
+  # check-ssl     probe will use https
+  # inter         sets the interval between two consecutive health checks
+  # downinter     sets the interval between two consecutive health checks when target is down
+  # rise          number of successful health checks to consider up
+  # fall          number of unsuccessful health checks to consider down.
+  # slowstart     ramp up the traffic to a newly healthy endpoint
+  # maxconn       Sets the maximum per-process number of concurrent connections
+  # maxqueue      specifies the maximal number of connections which will wait in the queue for this server
+  # weight        All servers will receive a load proportional to their weight relative to the sum of all weights
+  default-server verify none check-ssl inter 1s downinter 5s rise 2 fall 2 slowstart 60s maxconn 5000 maxqueue 5000 weight 100
+
+{% for host in groups.masters %}
+  server {{ host.split(".")[0] }} {{ host }}:6443 check
+{% endfor %}
+
+listen ingress-router-443
+  bind *:443
+  mode tcp
+  balance source
+{# The Ingress Controller pods run on the compute nodes by default. #}
+{% for host in groups.workers %}
+  server {{ host.split(".")[0] }} {{ host }}:30443 check inter 1s
+{% endfor %}
+
+listen ingress-router-80
+  bind *:80
+  mode tcp
+  balance source
+{# The Ingress Controller pods run on the compute nodes by default. #}
+{% for host in groups.workers %}
+  server {{ host.split(".")[0] }} {{ host }}:30080 check inter 1s
+{% endfor %}

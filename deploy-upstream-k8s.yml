@@ -12,7 +12,9 @@
 - import_playbook: setup_rpi.yml
 
 
-- hosts: masters
+- import_playbook: deploy-lbs.yml
+  when: inventory_hostname in groups['infras']
+
 - import_playbook: deploy-2-master.yml
   vars:
     token: abcdef.0123456789abcdef
