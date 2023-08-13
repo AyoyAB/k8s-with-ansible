@@ -1,5 +1,4 @@
 dependencies:
-  - role: debugging_role
   - role: cri-install-crio
     when: container_environment == "crio"
   - role: cri-install-docker
