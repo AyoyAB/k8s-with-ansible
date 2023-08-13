@@ -6,11 +6,14 @@
 
 - debug: var=task_result
 
+- debug:
+    msg: "{{ lookup('community.general.dig', inventory_hostname) }}	{{ inventory_hostname }}"
+
 - name: build /etc/hosts localhost
   lineinfile:
     dest: /etc/hosts
     regexp: "^127.0.0.1.*{{ item }}$"
-    line: "127.0.0.1	{{ item }}"
+    line: "{{ lookup('community.general.dig', item) }}	{{ item }}"
     state: present
   with_items:
     - "{{ inventory_hostname }}"

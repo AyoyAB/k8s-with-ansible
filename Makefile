@@ -30,7 +30,7 @@ all:
 
 .PHONY: dependencies
 dependencies:
-	#pip install -r requirements.txt
+	pip install -r requirements.txt
 	ansible-galaxy install -r requirements.yml
 
 .PHONY: local-dependencies

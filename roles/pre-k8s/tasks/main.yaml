@@ -47,7 +47,3 @@
     packages:
       - kubeadm
       - kubelet
-
-
-- fail:
-    msg: debug stop
