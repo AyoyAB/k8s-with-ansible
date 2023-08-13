@@ -4,13 +4,10 @@
 
 - import_playbook: validate_dns.yml
 
-- import_playbook: deploy-1-prek8s.yml
-  vars:
-    hosts: all
-    container_environment: "{{ container_env | default('docker') }}"
-
 - import_playbook: setup_rpi.yml
+  when: inventory_hostname in groups['rpis']
 
+- import_playbook: deploy-1-prek8s.yml
 
 - import_playbook: deploy-lbs.yml
   when: inventory_hostname in groups['infras']

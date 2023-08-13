@@ -1,0 +1,53 @@
+- debug:
+    var: container_environment
+
+- name: Add an Apt signing key for Kubernetes repo, uses whichever key is at the URL
+  retries: 5
+  delay: 5
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+# Very often the adding of repo below fails when updating the cache.
+# Best would be to reboot and retry when problem occurs but that seems
+# unnecessary hard. References:
+# https://dev.to/nodeselector/retrying-groups-of-tightly-coupled-tasks-in-ansible-579d
+# https://github.com/ansible/ansible/pull/62151
+# When running with "update_cache: no" and letting apt update cache below instead, at least
+# the error messages are better and retries works...
+- name: Add repo for Kubernetes
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    update_cache: no
+
+- name: Install kubeadm and kubelet with version {{ kubernetes_version+'-*' }}
+  retries: 6
+  delay: 10
+  when: kubernetes_version is defined
+  apt:
+    update_cache: yes
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - kubeadm={{ kubernetes_version+'-*' }}
+      - kubelet={{ kubernetes_version+'-*' }}
+
+
+- name: Install kubeadm and kubelet with latest version
+  retries: 6
+  delay: 10
+  when: kubernetes_version is not defined
+  apt:
+    update_cache: yes
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - kubeadm
+      - kubelet
+
+
+- fail:
+    msg: debug stop

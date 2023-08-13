@@ -23,8 +23,8 @@
     kube_version: "{{ kubernetes_version | default('stable-1') }}"
     init_opts: ""
 
-- debug: var=groups['masters'][0]
-
+- debug:
+    var: groups['masters'][0]
 
 - name: master - Init cluster if needed
   include_tasks: "first-master.yml"
@@ -32,7 +32,6 @@
   run_once: yes
   vars:
     - kubeadmin_config: /etc/kubernetes/admin.conf
-
 
 
 - name: master - Join new masters if needed

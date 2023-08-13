@@ -19,16 +19,30 @@
 - debug: var=ansible_architecture
 - debug: var=ansible_lsb.id
 
-- name: Add Docker repository (Raspberry PI 32-bit)
-  when: ansible_architecture == "armv7l" and ansible_lsb.id == "Raspbian"
-  shell: echo "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
+#- name: Add Docker repository (arm 32-bit)
+#  when: ansible_architecture == "armv7l"
+#  shell: echo "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
 
-- name: Add Docker repository (Raspberry PI 64-bit)
-  when: ansible_architecture == "aarch64" and ansible_lsb.id == "Raspbian"
-  shell: echo "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
+#- name: Add Docker repository (arm 64-bit)
+#  when: ansible_architecture == "aarch64"
+#  shell: echo "deb [arch=aarch64] https://download.docker.com/linux/{{ ansible_lsb.id|lower }} {{ ansible_distribution_release|lower }} stable" > /etc/apt/sources.list.d/docker.list
+
+- name: Add Docker repository (arm 32-bit).
+  when: ansible_architecture == "armv7l"
+  apt_repository:
+    repo: "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable"
+    state: present
+    update_cache: true
+
+- name: Add Docker repository (arm 64-bit).
+  when: ansible_architecture == "aarch64"
+  apt_repository:
+    repo: "deb [arch=armhf] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable"
+    state: present
+    update_cache: true
 
 - name: Add Docker repository (amd64).
-  when: ansible_architecture == "x86_64" and not ansible_lsb.id == "Raspbian"
+  when: ansible_architecture == "x86_64"
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable"
     state: present
@@ -38,15 +52,6 @@
   shell: "apt-mark hold aufs-dkms"
   when:
     - ansible_lsb.id == "Raspbian"
-
-- name: Install docker (Raspberry PI)
-  when: ansible_lsb.id == "Raspbian"
-  apt:
-    update_cache: yes
-    install_recommends: no
-    name:
-      - "docker-ce=5:19.03.6~3-0~raspbian-buster"
-    state: "present"
 
 - name: Install docker (amd64)
   when: not ansible_lsb.id == "Raspbian"
