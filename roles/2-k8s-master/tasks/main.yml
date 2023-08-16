@@ -29,15 +29,13 @@
   vars:
     - kubeadmin_config: /etc/kubernetes/admin.conf
 
-- debug:
-    var: groups['masters'][0]
-
-- fail:
-    msg: Debug
+- name: Validate load balancer
+  include_tasks: validate-loadbalancer.yaml
+  when: inventory_hostname == groups['masters'][0]
 
 - name: master - Join other masters to cluster
   include_tasks: "join.yml"
-  when: not kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
+  when: not inventory_hostname == groups['masters'][0]
 
 - name: master - Enable and check kubelet service
   systemd:
@@ -47,6 +45,8 @@
     enabled: yes
   become: yes
   register: started_kubelet
+
+- include_tasks: all-pods-running.yaml
 
 - name: master - do facts module to get latest information
   setup:

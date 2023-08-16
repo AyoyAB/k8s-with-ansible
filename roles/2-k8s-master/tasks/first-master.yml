@@ -22,7 +22,7 @@
       --token {{ token }} \
       --apiserver-advertise-address {{ master_ip }} \
       --upload-certs \
-      --control-plane-endpoint {{ groups['masters'][0] }}:6443 \
+      --control-plane-endpoint {{ kube_api_endpoint }}:6443 \
       {{ kubeadm_opts }} \
       {{ init_opts }}
   vars:
@@ -48,7 +48,7 @@
     path: ".kube/"
     state: directory
 
-- name: first-master - Copy admin.conf to Home directory
+- name: first-master - Copy admin config to Home directory
   become: yes
   when: init_cluster is succeeded
   copy:
@@ -58,6 +58,13 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0600
     remote_src: true
+
+- name: first-master - Copy admin config to ansible machine
+  become: false
+  ansible.builtin.fetch:
+    src: "~/.kube/config"
+    dest: /Users/john/Projects/ayoy/k8s-with-ansible/k8s-files/auth/config
+    flat: yes
 
 - include_tasks: "probes-api.yaml"
 
@@ -87,6 +94,3 @@
   until: numberReady.stdout|int > 0
   retries: 120
   delay: 10
-
-- fail:
-    msg: Debug

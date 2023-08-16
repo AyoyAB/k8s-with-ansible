@@ -24,12 +24,14 @@
       --control-plane \
       --certificate-key {{ hostvars[groups['masters'][0]]['certificate_key'][0] }} \
       --v=5 \
-      {{ groups['masters'][0] }}:6443
+      {{ kube_api_endpoint }}:6443
   register: init_cluster
   vars:
     - join_token: "{{ token | default('abcdef.0123456789abcdef') }} "
 
 - debug: var=init_cluster
+
+- include_tasks: probes-api.yaml
 
 - name: secondary-master - Enable and check kubelet service
   systemd:
