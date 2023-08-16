@@ -1,4 +1,4 @@
-- name: Install utilities such as ping
+- name: Install utilities such as ping, jq and tcpdump
   apt:
     name: "{{ packages }}"
     state: present
