@@ -11,7 +11,8 @@
     iptables --flush && \
     iptables -tnat --flush
 
-- debug: var=hostvars[groups['masters'][0]]['certificate_key'][0]
+#- debug:
+#    var: hostvars[groups['masters'][0]]['certificate_key'][0]
 
 # Certificate key is created by creating the first master
 - name: secondary-master - Join master to Kubernetes cluster
@@ -19,18 +20,21 @@
   when: reset_cluster is succeeded
   shell: |
     kubeadm join \
-      --discovery-token {{ join_token }} \
+      --discovery-token {{ token }} \
       --discovery-token-unsafe-skip-ca-verification \
       --control-plane \
       --certificate-key {{ hostvars[groups['masters'][0]]['certificate_key'][0] }} \
       --v=5 \
       {{ kube_api_endpoint }}:6443
   register: init_cluster
-  vars:
-    - join_token: "{{ token | default('abcdef.0123456789abcdef') }} "
+  until: "init_cluster.rc == 0"
+  retries: 60
+  delay: 10
 
-- debug: var=init_cluster
+- debug:
+    var: init_cluster
 
+# Wait until the API of the master is up.
 - include_tasks: probes-api.yaml
 
 - name: secondary-master - Enable and check kubelet service
@@ -41,4 +45,3 @@
     enabled: yes
   become: yes
   register: started_kubelet
-

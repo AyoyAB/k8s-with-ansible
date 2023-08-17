@@ -7,8 +7,13 @@
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
+# First clean secondary masters, leaving the primary.
 - include_tasks: clean.yaml
-  when: kubeadm_ca.stat.exists
+  when: kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
+
+# Then clean the primary master.
+- include_tasks: clean.yaml
+  when: kubeadm_ca.stat.exists and inventory_hostname == groups['masters'][0]
 
 - name: master - Will be installing this kubernetes version
   debug:
@@ -31,7 +36,6 @@
 
 - name: Validate load balancer
   include_tasks: validate-loadbalancer.yaml
-  when: inventory_hostname == groups['masters'][0]
 
 - name: master - Join other masters to cluster
   include_tasks: "join.yml"
@@ -46,7 +50,15 @@
   become: yes
   register: started_kubelet
 
+# It seems the API server is restarted after joining the secondary master.
+# Just wait it out.
+- name: Validate load balancer
+  include_tasks: validate-loadbalancer.yaml
+
 - include_tasks: all-pods-running.yaml
 
 - name: master - do facts module to get latest information
   setup:
+
+- fail:
+    msg: Debug

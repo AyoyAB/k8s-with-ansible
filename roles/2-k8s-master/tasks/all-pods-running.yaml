@@ -1,7 +1,10 @@
 - name: Make sure all pods that are supposed to be running, are running
+  delegate_to: localhost
   shell:
     cmd: |
-      kubectl -n kube-system get pod -o json |
+      kubectl \
+        --kubeconfig k8s-files/auth/config \
+        -n kube-system get pod -o json |\
       jq -r '[.items[] | select(.status.phase != "Running")] | length'
   register: result
   until: result.stdout_lines[0]|int == 0
