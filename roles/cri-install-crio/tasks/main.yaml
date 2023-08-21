@@ -18,6 +18,18 @@
     dest: /etc/containers/registries.conf
     src: templates/registries.conf
 
+- name: cri-install-crio - Enable IP forwarding
+  shell: sysctl net.ipv4.ip_forward=1
+
+- name: cri-install-crio - Install trusted certificates
+  template:
+    src: templates/registry-certificate.crt
+    dest: "/usr/local/share/ca-certificates/{{ item.host }}.crt"
+  with_items: "{{ trusted_registry_cas }}"
+  notify:
+    - Update-ca-certs
+    - Restart-crio
+
 - name: cri-install-crio - Make sure cri-o service unit is running
   ansible.builtin.systemd:
     enabled: true

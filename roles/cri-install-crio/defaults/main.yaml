@@ -1,1 +1,3 @@
 CRIO_VERSION: 1.19
+
+trusted_registry_cas: []

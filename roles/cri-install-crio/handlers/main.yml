@@ -1,0 +1,11 @@
+- name: Update-ca-certs
+  become: true
+  ansible.builtin.shell:
+    cmd:
+      update-ca-certificates
+
+- name: Restart-crio
+  become: true
+  ansible.builtin.service:
+    name: crio
+    state: restarted
