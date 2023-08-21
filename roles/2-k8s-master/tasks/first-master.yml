@@ -23,6 +23,7 @@
       --apiserver-advertise-address {{ master_ip }} \
       --upload-certs \
       --control-plane-endpoint {{ kube_api_endpoint }}:6443 \
+      --ignore-preflight-errors="{{ ignore_pre_flight_errors }}" \
       {{ kubeadm_opts }} \
       {{ init_opts }}
   vars:
