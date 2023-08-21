@@ -2,3 +2,5 @@ token: abcdef.0123456789abcdef
 
 k8s_cni: weave
 kubernetes_version: stable-1
+
+docker_io_repository_host: docker.io
