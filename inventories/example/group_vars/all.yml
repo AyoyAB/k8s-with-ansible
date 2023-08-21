@@ -18,6 +18,38 @@ kube_api_endpoint: api.{{ cluster_name }}.{{ base_domain }}
 container_environment: crio
 k8s_cni: weave
 k8s_files_kubeconfig: "{{ playbook_dir }}/k8s-files/auth/config"
+trusted_registry_cas:
+  - host: registry.okd4.example.com:5010
+    certificate: |
+      -----BEGIN CERTIFICATE-----
+      MIIE7DCCAtQCCQD4qZPh2u9z3zANBgkqhkiG9w0BAQsFADA4MQswCQYDVQQGEwJT
+      RTEQMA4GA1UECgwHQXlveSBBQjEXMBUGA1UEAwwOT0tEIExhYiBDQSB2NDIwHhcN
+      MjIxMDA2MTg0MDQzWhcNMjcxMDA1MTg0MDQzWjA4MQswCQYDVQQGEwJTRTEQMA4G
+      A1UECgwHQXlveSBBQjEXMBUGA1UEAwwOT0tEIExhYiBDQSB2NDIwggIiMA0GCSqG
+      SIb3DQEBAQUAA4ICDwAwggIKAoICAQDeuJfwQQvr0yT4E7Zqa3EWbV+IaULDYBYr
+      OgJ4kT1ri+20fwQDkG6yB1Sc9K1Ij8THB3hM0RZyjB/XJvqCiDd+u7CwNZp8dw5x
+      P75UtjlwPKlfdZfy0wXFgjw20UekWKsAkRbm7OWq7QLh0e769QuSQ0pRKNDudgpN
+      Y5bUFXKE1cf7KNsfHxuVsZtdbX7+cYlvj+/xfzToZJJkX2RVWWjrUBPGaiaVQX0I
+      MRLGnx5PpY4R0M9wr0zvHf81i2NNP6u+EX0qub8Dd5wueezwh/7WjvIsGQJfNYZX
+      uUMyBE+cVz8Izt9rmCf4wFcqolorf5ggaXZyvssMrUpvRg6NKhOxu5Eu+KBmO9G9
+      TGrFXDzH+saGcEeAOrFP8ByF7B4FaXw4fJai+zKP+48XpzZb16Xzbl0GBT5xl1hr
+      cjkP7D8yeKYuVM0PzRzWOPr0Zm82qQgFX+Vi0O2gS98SgNMA2mWL6hQcGpHtu42b
+      UVb+LmPUCY+CtdQG+/50vTDysTDX5QV+S692hKE7f/6MHP14t473Q5bbf+0ohhd6
+      RlWFZMw+VuU8PA/RmPkPig2mn+diUos0aYSDuSdyYf0XlvNexxqNj8+m46gzCNjm
+      jUaTjQKdGUrPecw3h1Dk0c7XDFq20BWW75Tjtf5b5tElUVpdAzIsGhoqIbs0G/dB
+      x2BGYlGc/wIDAQABMA0GCSqGSIb3DQEBCwUAA4ICAQAVz+buQbHCQeQh9X7tmxzA
+      xBhbGaINFZS6SHBgrEIRv1axqc/01W/9F93m/Zgo4etxf9PCGBgH90OGkLBK/fZP
+      yw/I1k21zZFD+cKEMduZbZXJjn7o6QXaHbQ49widcLQBYY5YdzAq7AbzQUgT8oyF
+      UvplWSaiZFbTYyOYtoIHh3u4viA1dNKK8daw0vFLzk5NtMSPZlTnKeIx2JQuKs/n
+      xe1u8HnOMMUgRTGvWcUWUvMrKNcpxQdBY+I4dB1NC7pggg61g4HEAyePmlBjGRG/
+      jUbOrZAho5XM05LJ3PRkXjkdBBnqnWYIy5LJegc3gDpDltmYTB1FlOHVj+5PR2An
+      Do0E1X2lod7xzl/lu6RQOkLstAi05BdCYm6YdrKLFZBei5kt7/vQfmcZI22XL4ud
+      erbOpedMjFozuanv/CU/Pa9UTa7/x0JjIw4IaaiIYLQdku0LZ3A1GkVNM86kJF3L
+      mS+sgKICVLgWHXVUqAAabZBhGF7QJxkQj6EhW4kWKkbXR8MLvajImFiXMxs+PXYm
+      amunyAtT9C/TAXPWd2/RirWbGAniaMeJ79jJCcG/cevzOM0XYJ/Qx+m4gEOaF4wm
+      +EKEkVKQTB+C/MFumiAcsbCLLGK2uF7YY1ZpaKNqzOJz1eaBjSx/JKFS4gy5+zQw
+      57prJeVPrZdL0/RNWYsofQ==
+      -----END CERTIFICATE-----
 
 # post k8s variables
 sealed_secrets: true
