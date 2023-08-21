@@ -5,21 +5,21 @@
 - debug: var=ansible_lsb.id
 
 
-- name: Install CRI-O on Debian
+- name: cri-install-crio - Install CRI-O on Debian
   when: ansible_distribution == "Debian"
   include_tasks: install_debian.yaml
 
 - fail:
-    msg: Unsupported OS
+    msg: cri-install-crio - Unsupported OS
   when: ansible_distribution != "Debian"
 
-- template:
+- name: cri-install-crio - Copy registries configuration
+  template:
     dest: /etc/containers/registries.conf
     src: templates/registries.conf
 
-- name: Make sure cri-o service unit is running
+- name: cri-install-crio - Make sure cri-o service unit is running
   ansible.builtin.systemd:
-    daemon_reload: true
     enabled: true
     state: started
     name: crio
