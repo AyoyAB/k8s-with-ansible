@@ -47,3 +47,11 @@
     packages:
       - kubeadm
       - kubelet
+
+- name: Enable IP forwarding
+  lineinfile:
+    path:  /etc/sysctl.conf
+    regexp: "net.ipv4.ip_forward"
+    line: "net.ipv4.ip_forward=1"
+    state: present
+  register: Reboot
