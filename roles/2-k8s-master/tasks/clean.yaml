@@ -5,13 +5,7 @@
 
 - name: Remove CNI config
   file:
-    path: /etc/cni/net.d
-    state: absent
-  become: true
-
-- name: Remove PKI config
-  file:
-    path: /etc/kubernetes/pki
+    path: /etc/cni
     state: absent
   become: true
 
@@ -23,7 +17,7 @@
 
 - name: Remove etcd data
   file:
-    path: /var/lib/etcd/member
+    path: /var/lib/etcd
     state: absent
   become: true
 
@@ -31,3 +25,7 @@
   shell:
     cmd: iptables -F && iptables -t nat -F
   become: true
+
+- name: Reboot
+  become: true
+  reboot:
