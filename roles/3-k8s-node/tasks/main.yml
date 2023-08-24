@@ -14,10 +14,9 @@
   become: yes
   shell: |
     kubeadm config images pull \
-      --kubernetes-version {{ kube_version }} \
+      --kubernetes-version {{ kubernetes_version }} \
       {{ init_opts }}
   vars:
-    kube_version: "{{ kubernetes_version | default('stable-1') }}"
     init_opts: ""
 
 - name: node - Init cluster if needed
