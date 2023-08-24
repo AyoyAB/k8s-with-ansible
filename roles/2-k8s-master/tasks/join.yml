@@ -25,6 +25,7 @@
       --control-plane \
       --certificate-key {{ hostvars[groups['masters'][0]]['certificate_key'][0] }} \
       --v=5 \
+      --ignore-preflight-errors="{{ ignore_pre_flight_errors }}" \
       {{ kube_api_endpoint }}:6443
   register: init_cluster
   until: "init_cluster.rc == 0"
