@@ -54,4 +54,4 @@
     regexp: "net.ipv4.ip_forward"
     line: "net.ipv4.ip_forward=1"
     state: present
-  register: Reboot
+  notify: Reboot
