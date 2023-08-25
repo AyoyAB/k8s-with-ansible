@@ -75,7 +75,7 @@ cluster-ask-pass: env-check
 
 .PHONY: cluster-config
 cluster-config: env-check
-	ansible-playbook -i inventories/${CLUSTER_NAME} -v configure-cluster.yml
+	ansible-playbook -i inventories/${CLUSTER_NAME} -v deploy-4-post-kubernetes.yml
 
 #
 # Load Balancer (lbs)
@@ -103,7 +103,7 @@ lbs-config-bootstrap-disabled: env-check
 
 .PHONY: clean
 clean:
-	rm -rf openshift-client openshift-files openshift-install
+	rm -rf k8s-files
 
 #
 #

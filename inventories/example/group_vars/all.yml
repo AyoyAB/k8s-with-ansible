@@ -54,3 +54,7 @@ trusted_registry_cas:
 # post k8s variables
 sealed_secrets: true
 argocd: true
+argocd_namespace: argocd
+argocd_enable_label_management: "true"
+argocd_repository_revision: k8s
+argocd_repository: https://github.com/smuda/home-cluster-argo.git

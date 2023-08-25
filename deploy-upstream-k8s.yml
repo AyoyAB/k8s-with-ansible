@@ -22,6 +22,6 @@
   vars:
     token: abcdef.0123456789abcdef
 
-
-- hosts: masters[0]
+- hosts: localhost
 - import_playbook: deploy-4-post-kubernetes.yml
+

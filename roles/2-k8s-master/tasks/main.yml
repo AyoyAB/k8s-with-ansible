@@ -59,6 +59,3 @@
 
 - name: master - do facts module to get latest information
   setup:
-
-- fail:
-    msg: Debug

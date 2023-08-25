@@ -1,14 +1,17 @@
 - name: Gathering facts
   setup:
 
-- name: Check that the helm executable exists
-  stat:
-    path: /usr/local/bin/helm
-  register: stat_result
+- name: Create k8s argocd namespace
+  kubernetes.core.k8s:
+    name: argocd
+    api_version: v1
+    kind: Namespace
+    state: present
 
-- include_tasks: helm_install.yml
-  vars:
-    helm_version: "3.5.3"
-  when: not stat_result.stat.exists
+- name: Install argocd.
+  include_tasks: argocd-install.yml
+  when: argocd
 
-- include_tasks: helm.yml
+- name: Configure argocd app-of-apps.
+  include_tasks: argocd-applications.yml
+  when: argocd
