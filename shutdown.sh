@@ -5,10 +5,6 @@
 MINUTES_TO_SHUTDOWN=${MINUTES_TO_SHUTDOWN:-0}
 SECONDS_AFTER_NODES=${SECONDS_AFTER_NODES:-120}
 
-certExpire=$(oc -n openshift-kube-apiserver-operator get secret kube-apiserver-to-kubelet-signer -o jsonpath='{.metadata.annotations.auth\.openshift\.io/certificate-not-after}')
-echo "Certificates will expire at ${certExpire}"
-echo ""
-
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 ansible -i "${SCRIPT_DIR}/inventories/example/hosts" nodes -m raw -a "/usr/sbin/shutdown ${MINUTES_TO_SHUTDOWN}" --become
