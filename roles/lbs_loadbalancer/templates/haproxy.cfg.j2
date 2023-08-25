@@ -68,7 +68,7 @@ listen ingress-router-443
   mode tcp
   balance source
 {# The Ingress Controller pods run on the compute nodes by default. #}
-{% for host in groups.workers %}
+{% for host in groups.nodes %}
   server {{ host.split(".")[0] }} {{ host }}:30443 check inter 1s
 {% endfor %}
 
@@ -77,6 +77,6 @@ listen ingress-router-80
   mode tcp
   balance source
 {# The Ingress Controller pods run on the compute nodes by default. #}
-{% for host in groups.workers %}
+{% for host in groups.nodes %}
   server {{ host.split(".")[0] }} {{ host }}:30080 check inter 1s
 {% endfor %}

@@ -1,12 +1,12 @@
 [all:children]
 infras
 masters
-workers
+nodes
 
 [rpis:children]
 infras
 masters
-workers
+nodes
 
 [infras]
 infra1.k8s1.example.com  ansible_host=192.168.160.200
@@ -14,7 +14,7 @@ infra1.k8s1.example.com  ansible_host=192.168.160.200
 [masters]
 master3.k8s1.example.com ansible_host=192.168.160.230
 
-[workers]
+[nodes]
 node7.k8s1.example.com   ansible_host=192.168.160.231
 node8.k8s1.example.com   ansible_host=192.168.160.232
 node9.k8s1.example.com   ansible_host=192.168.160.233
