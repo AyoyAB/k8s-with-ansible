@@ -15,7 +15,7 @@
   notify: Reboot
 
 - name: Create containerd config directory
-  become: yes
+  become: true
   file:
     path: /etc/containerd
     state: directory

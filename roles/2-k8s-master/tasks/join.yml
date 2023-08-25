@@ -1,5 +1,5 @@
 - name: secondary-master - Reset Kubernetes component
-  become: yes
+  become: true
   shell: |
     kubeadm reset \
       --force
@@ -16,7 +16,7 @@
 
 # Certificate key is created by creating the first master
 - name: secondary-master - Join master to Kubernetes cluster
-  become: yes
+  become: true
   when: reset_cluster is succeeded
   shell: |
     kubeadm join \
@@ -44,5 +44,5 @@
     daemon_reload: yes
     state: started
     enabled: yes
-  become: yes
+  become: true
   register: started_kubelet

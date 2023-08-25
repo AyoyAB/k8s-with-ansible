@@ -20,7 +20,7 @@
     msg: "{{ kubernetes_version | default('stable-1') }}"
 
 - name: master - Pull the Kubernetes images
-  become: yes
+  become: true
   shell: |
     kubeadm config images pull \
       --kubernetes-version {{ kubernetes_version }} \
@@ -47,7 +47,7 @@
     daemon_reload: yes
     state: started
     enabled: yes
-  become: yes
+  become: true
   register: started_kubelet
 
 # It seems the API server is restarted after joining the secondary master.

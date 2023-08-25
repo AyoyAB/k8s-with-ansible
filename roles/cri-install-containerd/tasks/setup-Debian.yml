@@ -4,7 +4,7 @@
 - debug: var=ansible_lsb.id
 
 - name: Configure containerd modules startup
-  become: yes
+  become: true
   template:
     src: ./templates/containerd.conf
     dest: /etc/modules-load.d/containerd.conf

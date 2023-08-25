@@ -1,5 +1,5 @@
 - name: node - Reset Kubernetes component
-  become: yes
+  become: true
   shell: "kubeadm reset --force"
   register: reset_cluster
 
@@ -11,7 +11,7 @@
   when: not kubeadm_ca.stat.exists
 
 - name: node - Init Kubernetes cluster
-  become: yes
+  become: true
   when: reset_cluster is succeeded
   shell: |
     kubeadm join \
@@ -26,6 +26,6 @@
     daemon_reload: yes
     state: started
     enabled: yes
-  become: yes
+  become: true
   register: started_kubelet
 

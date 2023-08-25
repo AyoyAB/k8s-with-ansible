@@ -11,7 +11,7 @@
 - debug: var=kubeadm_ca
 
 - name: node - Pull the Kubernetes images
-  become: yes
+  become: true
   shell: |
     kubeadm config images pull \
       --kubernetes-version {{ kubernetes_version }} \
@@ -31,7 +31,7 @@
     daemon_reload: yes
     state: started
     enabled: yes
-  become: yes
+  become: true
   register: started_kubelet
 
 - name: node - do facts module to get latest information
