@@ -69,7 +69,7 @@
 
 - include_tasks: "probes-api.yaml"
 
-- name: first-master - Wait before checking if the system is ok.
+- name: first-master - Wait before checking if the system is ok again.
   pause:
     seconds: 60
 
@@ -81,7 +81,7 @@
 
 #####################################
 
-- name: first-master - Wait before checking if the system is ok.
+- name: first-master - Wait for network installation before checking if the system is ok.
   pause:
     seconds: 180
 
