@@ -2,13 +2,15 @@
   fail: msg="Swap has to be disabled"
   when: ansible_swaptotal_mb > 0
 
-- name: node - Check if kubeadm has already run (/etc/kubernetes/pki/ca.crt)
-  become: yes
+- name: node - Check if kubeadm has already run
   stat:
-    path: "/etc/kubernetes/pki/ca.crt"
+    path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
-- debug: var=kubeadm_ca
+# Clean nodes.
+- name: node - Clean out previous kubernetes installation.
+  include_tasks: clean.yaml
+  when: kubeadm_ca.stat.exists
 
 - name: node - Pull the Kubernetes images
   become: true
@@ -19,11 +21,8 @@
   vars:
     init_opts: ""
 
-- name: node - Init cluster if needed
+- name: node - Join nodes to cluster
   include_tasks: "join.yml"
-  when: not kubeadm_ca.stat.exists
-  vars:
-    - kubeadmin_config: /etc/kubernetes/admin.conf
 
 - name: node - Enable and check kubelet service
   systemd:

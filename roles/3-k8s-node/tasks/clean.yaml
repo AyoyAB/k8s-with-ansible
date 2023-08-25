@@ -1,0 +1,31 @@
+- name: Run kubeadm reset
+  shell:
+    cmd: kubeadm reset --force
+  become: true
+
+- name: Remove CNI config
+  file:
+    path: /etc/cni
+    state: absent
+  become: true
+
+- name: Remove kubernetes config
+  file:
+    path: /etc/kubernetes
+    state: absent
+  become: true
+
+- name: Remove etcd data
+  file:
+    path: /var/lib/etcd
+    state: absent
+  become: true
+
+- name: Reset iptables
+  shell:
+    cmd: iptables -F && iptables -t nat -F
+  become: true
+
+- name: Reboot
+  become: true
+  reboot:

@@ -18,9 +18,7 @@
 
 - import_playbook: deploy-3-nodes.yml
   when:
-    - inventory_hostname in groups['workers']
-  vars:
-    token: abcdef.0123456789abcdef
+    - inventory_hostname in groups['nodes']
 
 - hosts: localhost
 - import_playbook: deploy-4-post-kubernetes.yml
