@@ -3,7 +3,7 @@
   shell:
     cmd: |
       kubectl \
-        --kubeconfig k8s-files/auth/config \
+        --kubeconfig {{ k8s_files_kubeconfig }} \
         -n kube-system get pod -o json |\
       jq -r '[.items[] | select(.status.phase != "Running")] | length'
   register: result
