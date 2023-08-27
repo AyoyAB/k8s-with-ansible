@@ -65,8 +65,19 @@
   become: false
   ansible.builtin.fetch:
     src: "~/.kube/config"
-    dest: /Users/john/Projects/ayoy/k8s-with-ansible/k8s-files/auth/config
+    dest: "{{ k8s_files_kubeconfig }}"
     flat: yes
+
+- name: first-master - Approve kubelet certificates
+  delegate_to: localhost
+  shell:
+    cmd: |
+      kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        get csr \
+        -o json |\
+      jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
+      xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        certificate approve
 
 - include_tasks: "probes-api.yaml"
 

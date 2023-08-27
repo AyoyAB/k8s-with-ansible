@@ -35,3 +35,26 @@
 
 - name: node - do facts module to get latest information
   setup: {}
+
+- name: node - Approve node certificates
+  delegate_to: localhost
+  shell:
+    cmd: |
+      kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        get csr \
+        -o json |\
+      jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
+      xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        certificate approve
+
+- name: node - Wait for node to be ready
+  delegate_to: localhost
+  shell:
+    cmd: |
+      kubectl get node {{ item }} -o json |\
+        jq -r '.status.conditions[] | select(.type == "Ready") | .status'
+  register: node_status
+  until: node_status.stdout_lines[0] == "True"
+  with_items: "{{ groups['nodes'] }}"
+  delay: 5
+  retries: 12
