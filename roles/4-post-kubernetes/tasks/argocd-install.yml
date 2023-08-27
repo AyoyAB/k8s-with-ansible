@@ -1,15 +1,7 @@
-
-# Download and apply manifest
-- name: Download argocd manifest.
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-    dest: k8s-files/argocd.yaml
-    mode: '0664'
-
-- name: Apply argocd manifest.
-  kubernetes.core.k8s:
+- name: Apply argocd helm installation.
+  kubernetes.core.helm:
     kubeconfig: "{{ k8s_files_kubeconfig }}"
-    namespace: "{{ argocd_namespace }}"
-    src: k8s-files/argocd.yaml
-    state: present
-
+    release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
+    chart_ref: argocd
+    name: argocd
