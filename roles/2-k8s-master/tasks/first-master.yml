@@ -11,21 +11,22 @@
     iptables --flush && \
     iptables -tnat --flush
 
+- name: first-master - Copy kubeadm config
+  template:
+    src: templates/kubeadm-first-master.yaml.j2
+    dest: kubeadm.yaml
+  vars:
+    service_cidr:     "10.96.0.0/12"
+    pod_network_cidr: "10.244.0.0/16"
+    master_ip:        "0.0.0.0"
+
 - name: first-master - Init Kubernetes cluster on first master
   become: true
   when: reset_cluster is succeeded
   shell: |
     kubeadm init \
-      --service-cidr {{ service_cidr }} \
-      --kubernetes-version {{ kubernetes_version }} \
-      --pod-network-cidr {{ pod_network_cidr }} \
-      --token {{ token }} \
-      --apiserver-advertise-address {{ master_ip }} \
-      --upload-certs \
-      --control-plane-endpoint {{ kube_api_endpoint }}:6443 \
-      --ignore-preflight-errors="{{ ignore_pre_flight_errors }}" \
-      {{ kubeadm_opts }} \
-      {{ init_opts }}
+      --config kubeadm.yaml \
+      --upload-certs
   vars:
     service_cidr:     "10.96.0.0/12"
     pod_network_cidr: "10.244.0.0/16"
