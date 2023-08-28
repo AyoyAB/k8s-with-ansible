@@ -58,3 +58,18 @@
   with_items: "{{ groups['nodes'] }}"
   delay: 5
   retries: 12
+
+- name: node - Wait for the rest of the CSRs
+  pause:
+    seconds: 15
+
+- name: node - Approve node certificates
+  delegate_to: localhost
+  shell:
+    cmd: |
+      kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        get csr \
+        -o json |\
+      jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
+      xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        certificate approve
