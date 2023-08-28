@@ -16,7 +16,7 @@ docker_io_repository_host: registry.okd4.example.com:5010
 kubernetes_version: stable-1
 kube_api_endpoint: api.{{ cluster_name }}.{{ base_domain }}
 container_environment: crio
-k8s_cni: weave
+k8s_cni: calico # calico or weave
 k8s_files_kubeconfig: "{{ playbook_dir }}/k8s-files/auth/config"
 trusted_registry_cas:
   - host: registry.okd4.example.com:5010

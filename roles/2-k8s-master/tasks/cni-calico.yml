@@ -1,0 +1,65 @@
+- name: calico - Initiate calico operator from github
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
+    src: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+
+- name: calico - Wait for operator to setup CRDs
+  shell:
+    cmd: |
+      kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
+  register: crd_status
+  until:
+    - (crd_status.stdout != "")
+    - (crd_status.stdout_lines[0]|int > 0)
+  retries: 12
+  delay: 5
+
+- name: calico - Wait for operator to setup CRDs
+  shell:
+    cmd: |
+      kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
+  register: crd_status
+  until: (crd_status.stdout_lines[0]|int > 0)
+  retries: 12
+  delay: 5
+
+- name: calico - Configure calico operator
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
+    template: templates/calico.yaml
+
+- include_tasks: "probes-api.yaml"
+
+- name: calico - Wait for the network to be installed before joining the other masters.
+  shell: "kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'"
+  changed_when: false
+  register: numberReady
+  until: numberReady.stdout == "1"
+  retries: 12
+  delay: 10
+  with_items:
+    - calico-node
+    - csi-node-driver
+
+- name: calico - Wait for the network to be installed before joining the other masters.
+  shell: "kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  changed_when: false
+  register: numberReady
+  until: numberReady.stdout|int > 0
+  retries: 12
+  delay: 10
+  with_items:
+    - calico-kube-controllers
+    - calico-typha
+
+- name: calico - Wait for the network to be installed before joining the other masters.
+  shell: "kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  changed_when: false
+  register: numberReady
+  until: numberReady.stdout|int > 0
+  retries: 12
+  delay: 10
+  with_items:
+    - calico-apiserver

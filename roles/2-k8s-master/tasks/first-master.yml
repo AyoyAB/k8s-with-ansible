@@ -17,7 +17,6 @@
     dest: kubeadm.yaml
   vars:
     service_cidr:     "10.96.0.0/12"
-    pod_network_cidr: "10.244.0.0/16"
     master_ip:        "0.0.0.0"
 
 - name: first-master - Init Kubernetes cluster on first master
@@ -29,7 +28,6 @@
       --upload-certs
   vars:
     service_cidr:     "10.96.0.0/12"
-    pod_network_cidr: "10.244.0.0/16"
     master_ip:        "0.0.0.0"
     kubeadm_opts:     "--token-ttl 0 "
     init_opts:        ""
@@ -88,9 +86,17 @@
 - include_tasks: probes-api.yaml
 
 #####################################
+- include_tasks: "cni-calico.yml"
+  when: k8s_cni == "calico"
+
 - include_tasks: "cni-weave.yml"
   when: k8s_cni == "weave"
 
+- when:
+    - k8s_cni != "calico"
+    - k8s_cni != "weave"
+  fail:
+    msg: "Unsupported CNI configuration: {{ k8s_cni }}"
 #####################################
 
 - name: first-master - Wait for network installation before checking if the system is ok.

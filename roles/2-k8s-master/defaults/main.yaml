@@ -7,3 +7,5 @@ ignore_pre_flight_errors:
   - FileContent--proc-sys-net-bridge-bridge-nf-call-iptables
 
 docker_io_repository_host: docker.io
+
+pod_network_cidr: "10.244.0.0/16"
