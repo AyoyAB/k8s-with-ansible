@@ -19,7 +19,7 @@
   delay: 10
 
 - name: Verify connection
-  ansible.builtin.shell:
+  ansible.builtin.command:
     kubectl get pod -A
   when: inventory_hostname == groups['masters'][0]
   changed_when: false

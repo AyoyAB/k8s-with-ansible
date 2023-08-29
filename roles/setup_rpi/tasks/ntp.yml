@@ -35,7 +35,7 @@
 
 
 - name: Sync time initialy
-  ansible.builtin.shell: ntpd -gq
+  ansible.builtin.command: ntpd -gq
   when: ntp_status.changed
   changed_when: false
 

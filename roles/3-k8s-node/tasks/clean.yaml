@@ -1,5 +1,5 @@
 - name: Run kubeadm reset
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: kubeadm reset --force
   become: true
   changed_when: true

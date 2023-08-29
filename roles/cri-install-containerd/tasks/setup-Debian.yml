@@ -17,7 +17,7 @@
       - gnupg
 
 - name: Get the architecture
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: dpkg --print-architecture
   register: arch
   changed_when: false
