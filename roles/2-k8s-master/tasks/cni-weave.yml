@@ -33,7 +33,7 @@
 - name: Weave - Wait for the network to be installed before joining the other masters.
   delegate_to: localhost
   ansible.builtin.command:
-    command: |
+    cmd: |
       kubectl --kubeconfig "{{ k8s_files_kubeconfig }}" \
       -n kube-system \
       get DaemonSet weave-net -o json | jq '.status.numberReady'
