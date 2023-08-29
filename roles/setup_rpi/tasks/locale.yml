@@ -3,7 +3,6 @@
     destfile: /etc/default/keyboard
     regexp: '"gb"'
     replace: '"sv"'
-  ignore_errors: yes
 
 - name: Ensure a locale exists
   community.general.locale_gen:
