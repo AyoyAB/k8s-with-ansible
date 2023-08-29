@@ -13,9 +13,19 @@ cluster_name: k8s1
 docker_io_repository_host: registry.okd4.example.com:5010
 
 # pre k8s variables
-kubernetes_version: stable-1
+kubernetes_version: 1.28.1
+# Last version in each minor at the time of writing
+# 1.27.5
+# 1.26.8
+# 1.25.13
+# 1.24.16
+# 1.23.17
+# 1.22.17
+# 1.21.14
+# 1.20.15
+# stable-1
 kube_api_endpoint: api.{{ cluster_name }}.{{ base_domain }}
-container_environment: crio
+container_environment: crio # crio or containerd
 k8s_cni: calico # calico or weave
 k8s_files_kubeconfig: "{{ playbook_dir }}/k8s-files/auth/config"
 trusted_registry_cas:
