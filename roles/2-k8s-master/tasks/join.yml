@@ -14,9 +14,6 @@
     iptables -tnat --flush
   changed_when: true
 
-#- ansible.builtin.debug:
-#    var: hostvars[groups['masters'][0]]['certificate_key'][0]
-
 # Certificate key is created by creating the first master
 - name: Secondary-master - Join master to Kubernetes cluster
   become: true
