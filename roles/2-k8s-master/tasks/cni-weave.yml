@@ -37,7 +37,7 @@
       -n kube-system \
       get DaemonSet weave-net -o json | jq '.status.numberReady'
   changed_when: false
-  register: numberReady
-  until: numberReady.stdout == "1"
+  register: number_ready
+  until: number_ready.stdout == "1"
   retries: 12
   delay: 10

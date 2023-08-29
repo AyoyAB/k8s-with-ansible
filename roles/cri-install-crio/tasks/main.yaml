@@ -6,25 +6,25 @@
 
 - name: Cri-o - Retrive cri-o version from kubernetes version
   ansible.builtin.set_fact:
-    CRIO_KUBE_VERSION: "{{ kubernetes_version | regex_search('^[0-9]+\\.[0-9]+') }}"
+    kube_minor_version: "{{ kubernetes_version | regex_search('^[0-9]+\\.[0-9]+') }}"
 
 - name: Cri-o - Set version
   ansible.builtin.set_fact:
-    CRIO_VERSION: "{{ CRIO_KUBE_VERSION }}"
-  when: not CRIO_KUBE_VERSION == ""
+    crio_version: "{{ kube_minor_version }}"
+  when: not kube_minor_version == ""
 
 - name: Cri-o - Check that cri-o version could be retrieved from kubernetes_version
   ansible.builtin.fail:
     msg: "Warning: Expected extracted version from '{{ kubernetes_version }}' not to be empty."
-  when: CRIO_KUBE_VERSION == ""
+  when: kube_minor_version == ""
   ignore_errors: True
 
 - ansible.builtin.debug:
-    msg: "Will use cri-o version {{ CRIO_VERSION }}"
+    msg: "Will use cri-o version {{ crio_version }}"
 
 - ansible.builtin.pause:
     seconds: 3600
-  when: CRIO_KUBE_VERSION == ""
+  when: kube_minor_version == ""
 
 - name: Cri-o - cri-install-crio - Install CRI-O on Debian
   when: ansible_distribution == "Debian"

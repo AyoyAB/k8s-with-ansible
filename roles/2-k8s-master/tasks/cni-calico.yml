@@ -37,8 +37,8 @@
 - name: Calico - Wait for the network to be installed before joining the other masters.
   ansible.builtin.shell: "kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'"
   changed_when: false
-  register: numberReady
-  until: numberReady.stdout == "1"
+  register: number_ready
+  until: number_ready.stdout == "1"
   retries: 12
   delay: 10
   with_items:
@@ -48,8 +48,8 @@
 - name: Calico - Wait for the network to be installed before joining the other masters.
   ansible.builtin.shell: "kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'"
   changed_when: false
-  register: numberReady
-  until: numberReady.stdout|int > 0
+  register: number_ready
+  until: number_ready.stdout|int > 0
   retries: 12
   delay: 10
   with_items:
@@ -59,8 +59,8 @@
 - name: Calico - Wait for the network to be installed before joining the other masters.
   ansible.builtin.shell: "kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'"
   changed_when: false
-  register: numberReady
-  until: numberReady.stdout|int > 0
+  register: number_ready
+  until: number_ready.stdout|int > 0
   retries: 12
   delay: 10
   with_items:

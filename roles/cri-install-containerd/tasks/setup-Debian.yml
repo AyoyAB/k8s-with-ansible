@@ -43,5 +43,4 @@
       - docker-buildx-plugin
       - docker-compose-plugin
     update_cache: false
-  register: Reboot
   notify: Reboot

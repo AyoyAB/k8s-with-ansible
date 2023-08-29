@@ -115,7 +115,7 @@
 - name: First-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
   ansible.builtin.shell: "kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'"
   changed_when: false
-  register: numberReady
-  until: numberReady.stdout|int > 0
+  register: number_ready
+  until: number_ready.stdout|int > 0
   retries: 120
   delay: 10
