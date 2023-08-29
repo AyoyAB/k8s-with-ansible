@@ -1,3 +1,4 @@
+---
 argocd: true
 argocd_namespace: argocd
 argocd_enable_label_management: "true"

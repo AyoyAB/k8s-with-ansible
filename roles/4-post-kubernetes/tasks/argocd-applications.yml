@@ -1,5 +1,4 @@
 ---
-
 - name: Create or update the namespace
   kubernetes.core.k8s:
     kubeconfig: "{{ k8s_files_kubeconfig }}"

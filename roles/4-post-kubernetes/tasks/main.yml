@@ -1,3 +1,4 @@
+---
 - name: Gathering facts
   ansible.builtin.setup:
 

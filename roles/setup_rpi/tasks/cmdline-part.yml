@@ -1,3 +1,4 @@
+---
 - name: Test for entry in cmdline.txt "{{ item }}"
   ansible.builtin.command: 'grep "{{ item }}" {{ cmdline }}'
   register: test_grep1

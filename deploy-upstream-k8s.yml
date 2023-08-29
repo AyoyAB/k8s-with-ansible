@@ -1,3 +1,4 @@
+---
 - name: Gather facts
   hosts: all
   any_errors_fatal: true
@@ -32,4 +33,3 @@
 
 - name: Deploy applications using argo-cd
   import_playbook: deploy-4-post-kubernetes.yml
-

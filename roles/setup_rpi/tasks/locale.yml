@@ -1,3 +1,4 @@
+---
 - name: Keyboard
   ansible.builtin.replace:
     destfile: /etc/default/keyboard

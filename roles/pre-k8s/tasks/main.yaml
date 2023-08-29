@@ -1,3 +1,4 @@
+---
 - name: Add an Apt signing key for Kubernetes repo, uses whichever key is at the URL
   retries: 5
   delay: 5

@@ -1,3 +1,4 @@
+---
 - name: Validate inventory is not empty.
   ansible.builtin.fail:
     msg: "[ERROR] Empty inventory. No host available."

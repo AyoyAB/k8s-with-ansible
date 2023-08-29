@@ -1,3 +1,4 @@
+---
 - name: Master - Check swap is disabled
   ansible.builtin.fail:
     msg: "Swap has to be disabled"

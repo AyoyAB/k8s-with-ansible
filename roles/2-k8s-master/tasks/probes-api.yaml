@@ -1,3 +1,4 @@
+---
 - name: Check that you can call livez endpoint https://{{ inventory_hostname }}:6443/livez?verbose
   ansible.builtin.uri:
     url: https://{{ inventory_hostname }}:6443/livez?verbose

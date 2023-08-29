@@ -1,3 +1,4 @@
+---
 - name: Secondary-master - Reset Kubernetes component
   become: true
   ansible.builtin.shell: |

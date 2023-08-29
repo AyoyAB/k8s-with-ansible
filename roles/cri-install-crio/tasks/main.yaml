@@ -1,3 +1,4 @@
+---
 - name: Cri-o - Show distribution release
   ansible.builtin.debug:
     var: ansible_distribution_release

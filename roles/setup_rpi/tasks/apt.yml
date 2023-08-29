@@ -1,3 +1,4 @@
+---
 - name: Install utilities such as ping, jq and tcpdump
   ansible.builtin.apt:
     name: "{{ packages }}"

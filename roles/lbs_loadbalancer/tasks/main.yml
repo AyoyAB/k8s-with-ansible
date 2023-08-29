@@ -1,5 +1,4 @@
 ---
-
 - name: Disable HAProxy as load balancer.
   ansible.builtin.include_tasks: "haproxy-remove.yml"
   when: not loadbalancer_use_haproxy

@@ -1,5 +1,4 @@
 ---
-
 - name: Configure UFW to allow access access to local services
   community.general.ufw:
     rule: allow

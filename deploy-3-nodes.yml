@@ -1,3 +1,4 @@
+---
 - name: Setup the nodes
   hosts: "{{ hosts | default('nodes') }}"
   any_errors_fatal: true

@@ -1,3 +1,4 @@
+---
 - name: Run kubeadm reset
   ansible.builtin.command:
     cmd: kubeadm reset --force

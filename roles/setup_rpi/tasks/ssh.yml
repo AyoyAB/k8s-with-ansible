@@ -1,3 +1,4 @@
+---
 - name: Make ssh dir
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/.ssh"

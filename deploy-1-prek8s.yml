@@ -1,3 +1,4 @@
+---
 - name: Install the prerequisites
   hosts: "{{ hosts | default('all') }}"
   any_errors_fatal: true

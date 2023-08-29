@@ -1,3 +1,4 @@
+---
 - name: Check that you can call livez endpoint via load balancer https://{{ kube_api_endpoint }}:6443/livez?verbose
   delegate_to: localhost
   ansible.builtin.uri:

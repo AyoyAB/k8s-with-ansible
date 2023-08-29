@@ -1,3 +1,4 @@
+---
 - name: Setup the raspberry pi
   hosts: "{{ hosts | default('all') }}"
   any_errors_fatal: true

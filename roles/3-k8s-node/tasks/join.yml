@@ -1,3 +1,4 @@
+---
 - name: Node - Reset Kubernetes component
   become: true
   ansible.builtin.command: "kubeadm reset --force"

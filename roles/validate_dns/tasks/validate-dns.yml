@@ -1,5 +1,4 @@
 ---
-
 - name: DNS lookup of {{ item }}
   ansible.builtin.command: dig +short "{{ item }}"
   register: ip_result

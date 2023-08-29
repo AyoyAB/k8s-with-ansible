@@ -1,3 +1,4 @@
+---
 # Set the wireless regulatory area
 - name: Wireless - crda - Check if crda file exists
   ansible.builtin.stat:

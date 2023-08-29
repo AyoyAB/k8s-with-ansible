@@ -1,3 +1,4 @@
+---
 - name: Set debian variable
   ansible.builtin.set_fact:
     crio_os: "Debian_{{ ansible_distribution_major_version }}"

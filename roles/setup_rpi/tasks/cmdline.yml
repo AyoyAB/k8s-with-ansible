@@ -1,3 +1,4 @@
+---
 - name: "Check if file exists: {{ cmdline }}"
   ansible.builtin.stat:
     path: "{{ cmdline }}"

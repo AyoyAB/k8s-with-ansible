@@ -1,3 +1,4 @@
+---
 - name: Update-ca-certs
   become: true
   ansible.builtin.command:

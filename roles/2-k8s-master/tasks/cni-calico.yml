@@ -1,3 +1,4 @@
+---
 - name: Calico - Initiate calico operator from github
   delegate_to: localhost
   kubernetes.core.k8s:
