@@ -47,7 +47,7 @@
 
 - name: Enable IP forwarding
   ansible.builtin.lineinfile:
-    path:  /etc/sysctl.conf
+    path: /etc/sysctl.conf
     regexp: "net.ipv4.ip_forward"
     line: "net.ipv4.ip_forward=1"
     state: present

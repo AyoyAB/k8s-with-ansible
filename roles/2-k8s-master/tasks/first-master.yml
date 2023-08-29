@@ -20,8 +20,8 @@
     dest: kubeadm.yaml
     mode: '600'
   vars:
-    service_cidr:     "10.96.0.0/12"
-    master_ip:        "0.0.0.0"
+    service_cidr: "10.96.0.0/12"
+    master_ip: "0.0.0.0"
 
 - name: First-master - Init Kubernetes cluster on first master
   become: true

@@ -18,7 +18,6 @@
   ansible.builtin.pause:
     prompt: |
       Reverse DNS lookup of {{ item }} failed! IP {{ ip_result.stdout }} did not resolve to {{ item }}.
-      
       ----------------------------
       - Press return to continue -
       ----------------------------

@@ -11,7 +11,7 @@
     - systemctl disable dphys-swapfile
   changed_when: true
 
-#- name: Disable swap forever on non-RPI Debian
+# - name: Disable swap forever on non-RPI Debian
 #  ansible.builtin.command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 #  when: ansible_swaptotal_mb > 0
 #  changed_when: true

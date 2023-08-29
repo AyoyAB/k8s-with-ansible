@@ -10,15 +10,13 @@ spec:
   calicoNetwork:
     # Note: The ipPools section cannot be modified post-install.
     ipPools:
-    - blockSize: 26
-      cidr: {{ pod_network_cidr }}
-      encapsulation: VXLANCrossSubnet
-      natOutgoing: Enabled
-      nodeSelector: all()
+      - blockSize: 26
+        cidr: "{{ pod_network_cidr }}"
+        encapsulation: VXLANCrossSubnet
+        natOutgoing: Enabled
+        nodeSelector: all()
   registry: "{{ docker_io_repository_host }}"
-
 ---
-
 # This section configures the Calico API server.
 # For more information, see: https://projectcalico.docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.APIServer
 apiVersion: operator.tigera.io/v1

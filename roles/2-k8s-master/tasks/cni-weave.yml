@@ -1,5 +1,5 @@
 ---
-#- name: Deploy weave network into cluster
+# - name: Deploy weave network into cluster
 #  become: false
 #  when: init_cluster is succeeded
 #  ansible.builtin.shell: |
