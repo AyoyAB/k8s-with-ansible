@@ -12,6 +12,9 @@
   include_tasks: argocd-install.yml
   when: argocd
 
+- name: Inject startup-secrete for sealed secrets
+  include_tasks: sealed-secrets.yaml
+
 - name: Configure argocd app-of-apps.
   include_tasks: argocd-applications.yml
   when: argocd
