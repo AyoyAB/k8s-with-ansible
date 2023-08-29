@@ -17,14 +17,14 @@
   ansible.builtin.apt_repository:
     repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
     state: present
-    update_cache: no
+    update_cache: false
 
 - name: Install kubeadm and kubelet with version {{ kubernetes_version + '-*' }}
   retries: 6
   delay: 10
   when: kubernetes_version is defined
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     name: "{{ packages }}"
     state: present
   vars:
@@ -37,7 +37,7 @@
   delay: 10
   when: kubernetes_version is not defined
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     name: "{{ packages }}"
     state: present
   vars:

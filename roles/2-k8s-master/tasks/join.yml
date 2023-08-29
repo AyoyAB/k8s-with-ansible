@@ -61,8 +61,8 @@
 - name: Secondary-master - Enable and check kubelet service
   ansible.builtin.systemd:
     name: kubelet
-    daemon_reload: yes
+    daemon_reload: true
     state: started
-    enabled: yes
+    enabled: true
   become: true
   register: started_kubelet

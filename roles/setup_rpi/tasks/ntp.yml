@@ -37,4 +37,4 @@
   ansible.builtin.service:
     name: ntp
     state: started
-    enabled: yes
+    enabled: true

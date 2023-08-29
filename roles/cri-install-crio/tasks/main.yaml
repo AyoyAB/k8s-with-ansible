@@ -36,7 +36,7 @@
   tags:
     - skip_ansible_lint
   when: kube_minor_version == ""
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Cri-o - Show the cri-o version to install.
   ansible.builtin.debug:

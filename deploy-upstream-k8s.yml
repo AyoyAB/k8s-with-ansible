@@ -2,7 +2,7 @@
 - name: Gather facts
   hosts: all
   any_errors_fatal: true
-  gather_facts: no
+  gather_facts: false
 
 - name: Validate the DNS settings
   import_playbook: validate_dns.yml

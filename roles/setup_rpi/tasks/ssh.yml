@@ -20,4 +20,4 @@
     user: "{{ ansible_user }}"
     state: present
     key: "{{ lookup('file', '/Users/john/.ssh/id_ansible.pub') }}"
-  become: no
+  become: false

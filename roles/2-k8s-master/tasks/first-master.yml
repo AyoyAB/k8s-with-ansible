@@ -70,7 +70,7 @@
   ansible.builtin.fetch:
     src: "~/.kube/config"
     dest: "{{ k8s_files_kubeconfig }}"
-    flat: yes
+    flat: true
 
 - name: First-master - Approve kubelet certificates
   delegate_to: localhost
