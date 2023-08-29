@@ -4,11 +4,11 @@
     - ansible_os_family == 'Debian'
     - ansible_distribution != 'Ubuntu'
 
-- name: Install containerd on Ubuntu
-  ansible.builtin.include_tasks: setup-Ubuntu.yml
-  when:
-    - ansible_os_family == 'Debian'
-    - ansible_distribution == 'Ubuntu'
+#- name: Install containerd on Ubuntu
+#  ansible.builtin.include_tasks: setup-Ubuntu.yml
+#  when:
+#    - ansible_os_family == 'Debian'
+#    - ansible_distribution == 'Ubuntu'
 
 - name: Configure kubernetes cri startup
   ansible.builtin.template:
