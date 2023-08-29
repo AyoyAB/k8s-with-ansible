@@ -18,7 +18,7 @@
     state: present
     update_cache: no
 
-- name: Install kubeadm and kubelet with version {{ kubernetes_version+'-*' }}
+- name: Install kubeadm and kubelet with version {{ kubernetes_version + '-*' }}
   retries: 6
   delay: 10
   when: kubernetes_version is defined
@@ -28,8 +28,8 @@
     state: present
   vars:
     packages:
-      - kubeadm={{ kubernetes_version+'-*' }}
-      - kubelet={{ kubernetes_version+'-*' }}
+      - kubeadm={{ kubernetes_version + '-*' }}
+      - kubelet={{ kubernetes_version + '-*' }}
 
 - name: Install kubeadm and kubelet with latest version
   retries: 6

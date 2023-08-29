@@ -38,7 +38,7 @@
 
 - name: First-master - Retrieve the certificate key from kubeadm init
   ansible.builtin.set_fact:
-    certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"
+    certificate_key: "{{ init_cluster.stdout | regex_search(regexp, '\\1') }}"
   vars:
     regexp: '--certificate-key ([a-f0-9]*)'
 
