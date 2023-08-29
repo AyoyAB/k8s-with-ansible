@@ -7,4 +7,6 @@ rules:
     level: warning
 
 ignore:
-  - openshift-files/
+  - k8s-files/
+  - sealed-secrets-secret.yml
+  - roles/2-k8s-master/templates/weave.yaml
