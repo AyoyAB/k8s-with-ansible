@@ -43,9 +43,6 @@
 
 - name: Setup wireless configuration
   ansible.builtin.include_tasks: "wireless.yml"
-  when:
-    - ansible_lsb.id == "Raspbian"
-    # This really should be if there is a wireless network
 
 - name: Setup apt
   ansible.builtin.include_tasks: "apt.yml"
