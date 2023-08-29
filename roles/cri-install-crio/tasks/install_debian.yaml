@@ -8,7 +8,7 @@
 - ansible.builtin.debug:
     var: CRIO_VERSION
 
-- name: install backports on Debian <11
+- name: Install backports on Debian <11
   when: ansible_distribution_major_version|int < 11
   ansible.builtin.fail:
     msg: "On Debian 10 libseccomp >= 2.4.1 is required, which requires backports. Simply put, this isn't tested and not supported"

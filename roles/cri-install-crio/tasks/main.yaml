@@ -4,16 +4,16 @@
 - ansible.builtin.debug: var=ansible_architecture
 - ansible.builtin.debug: var=ansible_lsb.id
 
-- name: Retrive cri-o version from kubernetes version
+- name: Cri-o - Retrive cri-o version from kubernetes version
   ansible.builtin.set_fact:
     CRIO_KUBE_VERSION: "{{ kubernetes_version | regex_search('^[0-9]+\\.[0-9]+') }}"
 
-- name: Set version
+- name: Cri-o - Set version
   ansible.builtin.set_fact:
     CRIO_VERSION: "{{ CRIO_KUBE_VERSION }}"
   when: not CRIO_KUBE_VERSION == ""
 
-- name: Check that cri-o version could be retrieved from kubernetes_version
+- name: Cri-o - Check that cri-o version could be retrieved from kubernetes_version
   ansible.builtin.fail:
     msg: "Warning: Expected extracted version from '{{ kubernetes_version }}' not to be empty."
   when: CRIO_KUBE_VERSION == ""
@@ -26,20 +26,20 @@
     seconds: 3600
   when: CRIO_KUBE_VERSION == ""
 
-- name: cri-install-crio - Install CRI-O on Debian
+- name: Cri-o - cri-install-crio - Install CRI-O on Debian
   when: ansible_distribution == "Debian"
   ansible.builtin.include_tasks: install_debian.yaml
 
 - ansible.builtin.fail:
-    msg: cri-install-crio - Unsupported OS
+    msg: Cri-o - Unsupported OS
   when: ansible_distribution != "Debian"
 
-- name: cri-install-crio - Copy registries configuration
+- name: Cri-o - Copy registries configuration
   ansible.builtin.template:
     dest: /etc/containers/registries.conf
     src: templates/registries.conf
 
-- name: cri-install-crio - Install trusted certificates
+- name: Cri-o - Install trusted certificates
   ansible.builtin.template:
     src: templates/registry-certificate.crt
     dest: "/usr/local/share/ca-certificates/{{ item.host }}.crt"
@@ -48,7 +48,7 @@
     - Update-ca-certs
     - Restart-crio
 
-- name: cri-install-crio - Make sure cri-o service unit is running
+- name: Cri-o - Make sure cri-o service unit is running
   ansible.builtin.systemd:
     enabled: true
     state: started

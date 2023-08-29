@@ -1,34 +1,35 @@
-- name: gather facts
+- name: Gather facts
   hosts: all
   any_errors_fatal: true
   gather_facts: no
 
-- name: validate the DNS settings
+- name: Vvalidate the DNS settings
   import_playbook: validate_dns.yml
 
-- name: setup raspberry pis
+- name: Setup raspberry pis
   import_playbook: setup_rpi.yml
   when: inventory_hostname in groups['rpis']
 
-- name: deploy kubernetes prerequisites
+- name: Deploy kubernetes prerequisites
   import_playbook: deploy-1-prek8s.yml
 
-- name: deploy loadbalancer
+- name: Deploy loadbalancer
   import_playbook: deploy-lbs.yml
   when: inventory_hostname in groups['infras']
 
-- name: deploy the masters
+- name: Deploy the masters
   import_playbook: deploy-2-master.yml
   when:
     - inventory_hostname in groups['masters']
 
-- name: deploy nodes
+- name: Deploy nodes
   import_playbook: deploy-3-nodes.yml
   when:
     - inventory_hostname in groups['nodes']
 
-- name: switch to using localhost
+- name: Switch to using localhost
   hosts: localhost
-- name: deploy applications using argo-cd
+
+- name: Deploy applications using argo-cd
   import_playbook: deploy-4-post-kubernetes.yml
 

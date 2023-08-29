@@ -1,12 +1,12 @@
 # Set the wireless regulatory area
-- name: crda
+- name: Wireless - crda
   ansible.builtin.replace:
     destfile: /etc/default/crda
     regexp: 'REGDOMAIN='
     replace: 'REGDOMAIN=SE'
   ignore_errors: yes
 
-- name: regdomain
+- name: Wireless - regdomain
   ansible.builtin.replace:
     destfile: /lib/crda/setregdomain
     regexp: 'REGDOMAIN='

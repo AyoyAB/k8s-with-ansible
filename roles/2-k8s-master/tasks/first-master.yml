@@ -1,4 +1,4 @@
-- name: first-master - Reset Kubernetes component
+- name: First-master - Reset Kubernetes component
   become: true
   ansible.builtin.shell: |
     kubeadm reset \
@@ -6,14 +6,14 @@
   register: reset_cluster
   changed_when: true
 
-- name: first-master - Flush iptables
+- name: First-master - Flush iptables
   become: true
   ansible.builtin.shell: |
     iptables --flush && \
     iptables -tnat --flush
   changed_when: true
 
-- name: first-master - Copy kubeadm config
+- name: First-master - Copy kubeadm config
   ansible.builtin.template:
     src: templates/kubeadm-first-master.yaml.j2
     dest: kubeadm.yaml
@@ -21,7 +21,7 @@
     service_cidr:     "10.96.0.0/12"
     master_ip:        "0.0.0.0"
 
-- name: first-master - Init Kubernetes cluster on first master
+- name: First-master - Init Kubernetes cluster on first master
   become: true
   when: reset_cluster is succeeded
   ansible.builtin.shell: |
@@ -46,13 +46,13 @@
 
 - ansible.builtin.debug: var=certificate_key
 
-- name: first-master - Create Kubernetes config directory
+- name: First-master - Create Kubernetes config directory
   become: true
   ansible.builtin.file:
     path: ".kube/"
     state: directory
 
-- name: first-master - Copy admin config to Home directory
+- name: First-master - Copy admin config to Home directory
   become: true
   when: init_cluster is succeeded
   ansible.builtin.copy:
@@ -63,14 +63,14 @@
     mode: 0600
     remote_src: true
 
-- name: first-master - Copy admin config to ansible machine
+- name: First-master - Copy admin config to ansible machine
   become: false
   ansible.builtin.fetch:
     src: "~/.kube/config"
     dest: "{{ k8s_files_kubeconfig }}"
     flat: yes
 
-- name: first-master - Approve kubelet certificates
+- name: First-master - Approve kubelet certificates
   delegate_to: localhost
   ansible.builtin.shell:
     cmd: |
@@ -85,7 +85,7 @@
 
 - ansible.builtin.include_tasks: "probes-api.yaml"
 
-- name: first-master - Wait before checking if the system is ok again.
+- name: First-master - Wait before checking if the system is ok again.
   ansible.builtin.pause:
     seconds: 60
 
@@ -105,14 +105,14 @@
     msg: "Unsupported CNI configuration: {{ k8s_cni }}"
 #####################################
 
-- name: first-master - Wait for network installation before checking if the system is ok.
+- name: First-master - Wait for network installation before checking if the system is ok.
   ansible.builtin.pause:
     seconds: 180
 
 - ansible.builtin.include_tasks: probes-api.yaml
 - ansible.builtin.include_tasks: all-pods-running.yaml
 
-- name: first-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
+- name: First-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
   ansible.builtin.shell: "kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'"
   changed_when: false
   register: numberReady

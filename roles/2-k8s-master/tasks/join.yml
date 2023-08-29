@@ -1,4 +1,4 @@
-- name: secondary-master - Reset Kubernetes component
+- name: Secondary-master - Reset Kubernetes component
   become: true
   ansible.builtin.shell: |
     kubeadm reset \
@@ -6,7 +6,7 @@
   register: reset_cluster
   changed_when: true
 
-- name: secondary-master - Flush iptables
+- name: Secondary-master - Flush iptables
   become: true
   ansible.builtin.shell: |
     iptables --flush && \
@@ -17,7 +17,7 @@
 #    var: hostvars[groups['masters'][0]]['certificate_key'][0]
 
 # Certificate key is created by creating the first master
-- name: secondary-master - Join master to Kubernetes cluster
+- name: Secondary-master - Join master to Kubernetes cluster
   become: true
   when: reset_cluster is succeeded
   ansible.builtin.shell: |
@@ -38,7 +38,7 @@
 - ansible.builtin.debug:
     var: init_cluster
 
-- name: secondary-master - Approve kubelet certificates
+- name: Secondary-master - Approve kubelet certificates
   delegate_to: localhost
   ansible.builtin.shell:
     cmd: |
@@ -54,7 +54,7 @@
 # Wait until the API of the master is up.
 - ansible.builtin.include_tasks: probes-api.yaml
 
-- name: secondary-master - Enable and check kubelet service
+- name: Secondary-master - Enable and check kubelet service
   ansible.builtin.systemd:
     name: kubelet
     daemon_reload: yes

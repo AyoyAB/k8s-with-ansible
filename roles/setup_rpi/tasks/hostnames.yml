@@ -9,7 +9,7 @@
 - ansible.builtin.debug:
     msg: "{{ lookup('community.general.dig', inventory_hostname) }}	{{ inventory_hostname }}"
 
-- name: build /etc/hosts localhost
+- name: Build /etc/hosts localhost
   ansible.builtin.lineinfile:
     dest: /etc/hosts
     regexp: "^127.0.0.1.*{{ item }}$"
@@ -18,7 +18,7 @@
   with_items:
     - "{{ inventory_hostname }}"
 
-- name: build /etc/hosts
+- name: Build /etc/hosts
   ansible.builtin.lineinfile:
     dest: /etc/hosts
     regexp: "^.*{{ item }}$"

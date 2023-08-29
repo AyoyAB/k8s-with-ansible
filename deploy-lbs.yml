@@ -1,4 +1,4 @@
-- name: setup the load balancer
+- name: Setup the load balancer
   hosts: "{{ hosts | default('infras') }}"
   any_errors_fatal: true
   become: true

@@ -45,6 +45,6 @@
 
 - ansible.builtin.include_tasks: "ntp.yml"
 
-- name: do facts module to get latest information
+- name: Do facts module to get latest information
   ansible.builtin.setup:
 

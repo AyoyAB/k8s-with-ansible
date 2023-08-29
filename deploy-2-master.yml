@@ -1,4 +1,4 @@
-- name: setup the masters
+- name: Setup the masters
   hosts: "{{ hosts | default('masters') }}"
   any_errors_fatal: true
   roles:

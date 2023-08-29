@@ -11,7 +11,7 @@
 
 # Because of bug in weave the image isn't ARM
 # https://github.com/weaveworks/weave/issues/3842
-- name: Deploy weave network into cluster
+- name: Weave - Deploy weave network into cluster
   become: false
   delegate_to: localhost
   kubernetes.core.k8s:
@@ -23,13 +23,13 @@
   delay: 2
 
 # Wait for the network to be installed before joining the other masters.
-- name: first-master - Wait before checking if the network is ok.
+- name: Weave - Wait before checking if the network is ok.
   ansible.builtin.pause:
     seconds: 90
 
 - ansible.builtin.include_tasks: "probes-api.yaml"
 
-- name: first-master - Wait for the network to be installed before joining the other masters.
+- name: Weave - Wait for the network to be installed before joining the other masters.
   delegate_to: localhost
   ansible.builtin.shell:
     command: |
