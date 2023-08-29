@@ -17,6 +17,7 @@
   ansible.builtin.template:
     src: templates/kubeadm-first-master.yaml.j2
     dest: kubeadm.yaml
+    mode: '600'
   vars:
     service_cidr:     "10.96.0.0/12"
     master_ip:        "0.0.0.0"
@@ -50,6 +51,7 @@
   ansible.builtin.file:
     path: ".kube/"
     state: directory
+    mode: '700'
 
 - name: First-master - Copy admin config to Home directory
   become: true

@@ -55,11 +55,13 @@
   ansible.builtin.template:
     dest: /etc/containers/registries.conf
     src: templates/registries.conf
+    mode: '644'
 
 - name: Cri-o - Install trusted certificates
   ansible.builtin.template:
     src: templates/registry-certificate.crt
     dest: "/usr/local/share/ca-certificates/{{ item.host }}.crt"
+    mode: '644'
   with_items: "{{ trusted_registry_cas }}"
   notify:
     - Update-ca-certs

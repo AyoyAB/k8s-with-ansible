@@ -53,3 +53,4 @@
   ansible.builtin.template:
     src: ./templates/cri-o.conf
     dest: /etc/modules-load.d/cri-o.conf
+    mode: '644'

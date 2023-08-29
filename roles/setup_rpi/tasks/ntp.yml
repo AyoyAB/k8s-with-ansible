@@ -12,7 +12,10 @@
       - ntpdate
 
 - name: Copy over the NTP configuration
-  ansible.builtin.template: src=./templates/ntp.conf dest=/etc/ntp.conf
+  ansible.builtin.template:
+    src: templates/ntp.conf
+    dest: /etc/ntp.conf
+    mode: '644'
   register: ntp_status
 
 - name: Make ntp directories
@@ -21,10 +24,10 @@
     state: directory
     owner: root
     group: root
+    mode: '700'
   with_items:
     - /etc/ntp/crypto/pw
     - /etc/ntp/keys
-
 
 - name: Make sure NTP is stopped
   ansible.builtin.service:

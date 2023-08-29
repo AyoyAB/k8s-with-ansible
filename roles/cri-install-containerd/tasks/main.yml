@@ -14,6 +14,7 @@
   ansible.builtin.template:
     src: ./templates/99-kubernetes-cri.conf
     dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    mode: '644'
   notify: Reboot
 
 - name: Create containerd config directory
@@ -21,6 +22,7 @@
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
+    mode: '755'
   notify: Restart
 
 
@@ -28,6 +30,7 @@
   ansible.builtin.template:
     src: ./templates/config.toml
     dest: /etc/containerd/config.toml
+    mode: '644'
   notify: Restart
 
 - name: Flush handlers
