@@ -32,6 +32,8 @@
 - name: Cri-o - Check that cri-o version could be retrieved from kubernetes_version
   ansible.builtin.fail:
     msg: "Warning: Expected extracted version from '{{ kubernetes_version }}' not to be empty."
+  tags:
+    - skip_ansible_lint
   when: kube_minor_version == ""
   ignore_errors: True
 
