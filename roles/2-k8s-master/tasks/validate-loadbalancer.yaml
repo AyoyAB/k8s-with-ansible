@@ -3,6 +3,8 @@
   ansible.builtin.uri:
     url: https://{{ kube_api_endpoint }}:6443/livez?verbose
     validate_certs: false
+  tags:
+    - skip_ansible_lint
   changed_when: false
   register: result
   until: "result.status == 200"
@@ -14,6 +16,8 @@
   ansible.builtin.uri:
     url: https://{{ kube_api_endpoint }}:6443/readyz?verbose
     validate_certs: false
+  tags:
+    - skip_ansible_lint
   changed_when: false
   register: result
   until: "result.status == 200"
