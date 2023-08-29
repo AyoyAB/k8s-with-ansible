@@ -3,7 +3,7 @@
   any_errors_fatal: true
   gather_facts: no
 
-- name: Vvalidate the DNS settings
+- name: Validate the DNS settings
   import_playbook: validate_dns.yml
 
 - name: Setup raspberry pis
