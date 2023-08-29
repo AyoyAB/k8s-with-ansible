@@ -1,12 +1,12 @@
 - name: Make ssh dir
-  file:
+  ansible.builtin.file:
     path: "/home/{{ ansible_user }}/.ssh"
     state: directory
     owner: "{{ ansible_user }}"
     mode: 0600
 
 - name: tweak ssh
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/ssh/ssh_config
     block: |
       ServerAliveInterval 240

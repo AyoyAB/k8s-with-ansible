@@ -1,6 +1,6 @@
 - name: Make sure all pods that are supposed to be running, are running
   delegate_to: localhost
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubectl \
         --kubeconfig {{ k8s_files_kubeconfig }} \

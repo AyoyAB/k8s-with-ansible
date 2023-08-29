@@ -1,32 +1,32 @@
-- include_tasks: setup-Debian.yml
+- ansible.builtin.include_tasks: setup-Debian.yml
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution != 'Ubuntu'
 
-- include_tasks: setup-Ubuntu.yml
+- ansible.builtin.include_tasks: setup-Ubuntu.yml
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution == 'Ubuntu'
 
 - name: Configure kubernetes cri startup
-  template:
+  ansible.builtin.template:
     src: ./templates/99-kubernetes-cri.conf
     dest: /etc/sysctl.d/99-kubernetes-cri.conf
   notify: Reboot
 
 - name: Create containerd config directory
   become: true
-  file:
+  ansible.builtin.file:
     path: /etc/containerd
     state: directory
   notify: Restart
 
 
 - name: Configure containerd
-  template:
+  ansible.builtin.template:
     src: ./templates/config.toml
     dest: /etc/containerd/config.toml
   notify: Restart
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

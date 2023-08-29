@@ -1,5 +1,5 @@
 - name: Reboot
-  reboot:
+  ansible.builtin.reboot:
 
 - name: Restart
   ansible.builtin.service:

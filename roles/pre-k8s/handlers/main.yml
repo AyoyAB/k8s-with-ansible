@@ -1,2 +1,2 @@
 - name: Reboot
-  reboot:
+  ansible.builtin.reboot:

@@ -1,6 +1,6 @@
 # This task disables swap for Kubernetes node (see https://github.com/kubernetes/kubernetes/pull/31996)
 - name: Disable swap for now
-  command: "{{  item }}"
+  ansible.builtin.command: "{{ item }}"
   when: ansible_swaptotal_mb > 0
   with_items:
     - swapoff --all
@@ -10,17 +10,17 @@
     - systemctl disable dphys-swapfile
 
 - name: Disable swap forever on non-RPI Debian
-  command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+  ansible.builtin.command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
   when: ansible_swaptotal_mb > 0
 
 - name: Reboot to apply changes
-  reboot:
+  ansible.builtin.reboot:
   when: ansible_swaptotal_mb > 0
 
 - name: Gathering facts
-  setup:
+  ansible.builtin.setup:
 
 - name: Make sure swap is disabled
-  fail:
+  ansible.builtin.fail:
     msg: "Failed to disable swap"
   when: ansible_swaptotal_mb > 0

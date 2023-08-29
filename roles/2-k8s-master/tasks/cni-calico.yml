@@ -5,7 +5,7 @@
     src: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
 
 - name: calico - Wait for operator to setup CRDs
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
   register: crd_status
@@ -16,7 +16,7 @@
   delay: 5
 
 - name: calico - Wait for operator to setup CRDs
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
   register: crd_status
@@ -30,10 +30,10 @@
     kubeconfig: "{{ k8s_files_kubeconfig }}"
     template: templates/calico.yaml
 
-- include_tasks: "probes-api.yaml"
+- ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: calico - Wait for the network to be installed before joining the other masters.
-  shell: "kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'"
+  ansible.builtin.shell: "kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'"
   changed_when: false
   register: numberReady
   until: numberReady.stdout == "1"
@@ -44,7 +44,7 @@
     - csi-node-driver
 
 - name: calico - Wait for the network to be installed before joining the other masters.
-  shell: "kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  ansible.builtin.shell: "kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'"
   changed_when: false
   register: numberReady
   until: numberReady.stdout|int > 0
@@ -55,7 +55,7 @@
     - calico-typha
 
 - name: calico - Wait for the network to be installed before joining the other masters.
-  shell: "kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  ansible.builtin.shell: "kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'"
   changed_when: false
   register: numberReady
   until: numberReady.stdout|int > 0

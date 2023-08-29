@@ -1,18 +1,18 @@
 - name: first-master - Reset Kubernetes component
   become: true
-  shell: |
+  ansible.builtin.shell: |
     kubeadm reset \
       --force
   register: reset_cluster
 
 - name: first-master - Flush iptables
   become: true
-  shell: |
+  ansible.builtin.shell: |
     iptables --flush && \
     iptables -tnat --flush
 
 - name: first-master - Copy kubeadm config
-  template:
+  ansible.builtin.template:
     src: templates/kubeadm-first-master.yaml.j2
     dest: kubeadm.yaml
   vars:
@@ -22,7 +22,7 @@
 - name: first-master - Init Kubernetes cluster on first master
   become: true
   when: reset_cluster is succeeded
-  shell: |
+  ansible.builtin.shell: |
     kubeadm init \
       --config kubeadm.yaml \
       --upload-certs
@@ -33,25 +33,25 @@
     init_opts:        ""
   register: init_cluster
 
-- debug: var=init_cluster.stdout_lines
+- ansible.builtin.debug: var=init_cluster.stdout_lines
 
-- set_fact:
+- ansible.builtin.set_fact:
     certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"
   vars:
     regexp: '--certificate-key ([a-f0-9]*)'
 
-- debug: var=certificate_key
+- ansible.builtin.debug: var=certificate_key
 
 - name: first-master - Create Kubernetes config directory
   become: true
-  file:
+  ansible.builtin.file:
     path: ".kube/"
     state: directory
 
 - name: first-master - Copy admin config to Home directory
   become: true
   when: init_cluster is succeeded
-  copy:
+  ansible.builtin.copy:
     src: "{{ kubeadmin_config }}"
     dest: ".kube/config"
     owner: "{{ ansible_user | default(ansible_user_id) }}"
@@ -68,7 +68,7 @@
 
 - name: first-master - Approve kubelet certificates
   delegate_to: localhost
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         get csr \
@@ -77,37 +77,37 @@
       xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         certificate approve
 
-- include_tasks: "probes-api.yaml"
+- ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: first-master - Wait before checking if the system is ok again.
-  pause:
+  ansible.builtin.pause:
     seconds: 60
 
-- include_tasks: probes-api.yaml
+- ansible.builtin.include_tasks: probes-api.yaml
 
 #####################################
-- include_tasks: "cni-calico.yml"
+- ansible.builtin.include_tasks: "cni-calico.yml"
   when: k8s_cni == "calico"
 
-- include_tasks: "cni-weave.yml"
+- ansible.builtin.include_tasks: "cni-weave.yml"
   when: k8s_cni == "weave"
 
 - when:
     - k8s_cni != "calico"
     - k8s_cni != "weave"
-  fail:
+  ansible.builtin.fail:
     msg: "Unsupported CNI configuration: {{ k8s_cni }}"
 #####################################
 
 - name: first-master - Wait for network installation before checking if the system is ok.
-  pause:
+  ansible.builtin.pause:
     seconds: 180
 
-- include_tasks: probes-api.yaml
-- include_tasks: all-pods-running.yaml
+- ansible.builtin.include_tasks: probes-api.yaml
+- ansible.builtin.include_tasks: all-pods-running.yaml
 
 - name: first-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
-  shell: "kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'"
+  ansible.builtin.shell: "kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'"
   changed_when: false
   register: numberReady
   until: numberReady.stdout|int > 0

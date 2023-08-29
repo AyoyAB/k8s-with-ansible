@@ -1,10 +1,10 @@
 - name: Test for entry in cmdline.txt "{{ item }}"
-  command: 'grep "{{ item }}" {{ cmdline }}'
+  ansible.builtin.command: 'grep "{{ item }}" {{ cmdline }}'
   register: test_grep1
   ignore_errors: yes
 
 - name: Add entry to cmdline "{{ item }}"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ cmdline }}"
     backrefs: True
     state: present

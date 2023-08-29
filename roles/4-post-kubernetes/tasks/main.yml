@@ -1,5 +1,5 @@
 - name: Gathering facts
-  setup:
+  ansible.builtin.setup:
 
 - name: Create k8s argocd namespace
   kubernetes.core.k8s:
@@ -9,12 +9,12 @@
     state: present
 
 - name: Install argocd.
-  include_tasks: argocd-install.yml
+  ansible.builtin.include_tasks: argocd-install.yml
   when: argocd
 
 - name: Inject startup-secrete for sealed secrets
-  include_tasks: sealed-secrets.yaml
+  ansible.builtin.include_tasks: sealed-secrets.yaml
 
 - name: Configure argocd app-of-apps.
-  include_tasks: argocd-applications.yml
+  ansible.builtin.include_tasks: argocd-applications.yml
   when: argocd

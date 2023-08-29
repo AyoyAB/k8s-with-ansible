@@ -1,11 +1,11 @@
 - name: node - Reset Kubernetes component
   become: true
-  shell: "kubeadm reset --force"
+  ansible.builtin.shell: "kubeadm reset --force"
   register: reset_cluster
 
 - name: node - Flush iptables
   become: true
-  shell: |
+  ansible.builtin.shell: |
     iptables --flush && \
     iptables -tnat --flush
   when: not kubeadm_ca.stat.exists
@@ -13,7 +13,7 @@
 - name: node - Join Kubernetes cluster
   become: true
   when: reset_cluster is succeeded
-  shell: |
+  ansible.builtin.shell: |
     kubeadm join \
       --discovery-token {{ token }} \
       --discovery-token-unsafe-skip-ca-verification \
@@ -22,7 +22,7 @@
   register: init_cluster
 
 - name: Enable and check kubelet service
-  systemd:
+  ansible.builtin.systemd:
     name: kubelet
     daemon_reload: yes
     state: started

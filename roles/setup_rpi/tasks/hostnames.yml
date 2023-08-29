@@ -1,16 +1,16 @@
 - name: Set the hostname
-  hostname: name={{ inventory_hostname }}
+  ansible.builtin.hostname: name={{ inventory_hostname }}
   when: not inventory_hostname is match('(\d{1,3}\.){3}\d{1,3}')
   register: task_result
   notify: Reboot
 
-- debug: var=task_result
+- ansible.builtin.debug: var=task_result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ lookup('community.general.dig', inventory_hostname) }}	{{ inventory_hostname }}"
 
 - name: build /etc/hosts localhost
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/hosts
     regexp: "^127.0.0.1.*{{ item }}$"
     line: "{{ lookup('community.general.dig', item) }}	{{ item }}"
@@ -19,7 +19,7 @@
     - "{{ inventory_hostname }}"
 
 - name: build /etc/hosts
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/hosts
     regexp: "^.*{{ item }}$"
     line: "{{ hostvars[item].ansible_host }}	{{ item }}"

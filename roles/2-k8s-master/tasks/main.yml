@@ -1,27 +1,27 @@
 - name: master - Check swap is disabled
-  fail: msg="Swap has to be disabled"
+  ansible.builtin.fail: msg="Swap has to be disabled"
   when: ansible_swaptotal_mb > 0
 
 - name: master - Check if kubeadm has already run
-  stat:
+  ansible.builtin.stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
 # First clean secondary masters, leaving the primary.
-- include_tasks: clean.yaml
+- ansible.builtin.include_tasks: clean.yaml
   when: kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
 
 # Then clean the primary master.
-- include_tasks: clean.yaml
+- ansible.builtin.include_tasks: clean.yaml
   when: kubeadm_ca.stat.exists and inventory_hostname == groups['masters'][0]
 
 - name: master - Will be installing this kubernetes version
-  debug:
+  ansible.builtin.debug:
     msg: "{{ kubernetes_version | default('stable-1') }}"
 
 - name: master - Pull the Kubernetes images
   become: true
-  shell: |
+  ansible.builtin.shell: |
     kubeadm config images pull \
       --kubernetes-version {{ kubernetes_version }} \
       {{ init_opts }}
@@ -29,20 +29,20 @@
     init_opts: ""
 
 - name: master - Init first master of cluster
-  include_tasks: "first-master.yml"
+  ansible.builtin.include_tasks: "first-master.yml"
   when: inventory_hostname == groups['masters'][0]
   vars:
     - kubeadmin_config: /etc/kubernetes/admin.conf
 
 - name: Validate load balancer
-  include_tasks: validate-loadbalancer.yaml
+  ansible.builtin.include_tasks: validate-loadbalancer.yaml
 
 - name: master - Join other masters to cluster
-  include_tasks: "join.yml"
+  ansible.builtin.include_tasks: "join.yml"
   when: not inventory_hostname == groups['masters'][0]
 
 - name: master - Enable and check kubelet service
-  systemd:
+  ansible.builtin.systemd:
     name: kubelet
     daemon_reload: yes
     state: started
@@ -53,9 +53,9 @@
 # It seems the API server is restarted after joining the secondary master.
 # Just wait it out.
 - name: Validate load balancer
-  include_tasks: validate-loadbalancer.yaml
+  ansible.builtin.include_tasks: validate-loadbalancer.yaml
 
-- include_tasks: all-pods-running.yaml
+- ansible.builtin.include_tasks: all-pods-running.yaml
 
 - name: master - do facts module to get latest information
-  setup:
+  ansible.builtin.setup:

@@ -1,15 +1,15 @@
 - name: Check if {{ cmdline }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ cmdline }}"
   register: cmdlinetxt
 
 - name: Create file if needed
   when: not cmdlinetxt.stat.exists
-  fail:
+  ansible.builtin.fail:
     msg: "There is no {{ cmdline }} file."
 
 - name: Check for entries in cmdline.txt
-  include_tasks: cmdline-part.yml
+  ansible.builtin.include_tasks: cmdline-part.yml
   with_items:
     - "cgroup_enable=cpuset"
     - "cgroup_enable=memory"
@@ -18,4 +18,4 @@
     - "swapaccount=1"
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

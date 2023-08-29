@@ -1,50 +1,50 @@
-- debug:
+- ansible.builtin.debug:
     var: hosts
 
 - name: Wait 300 seconds for target connection to become reachable/usable
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     delay: 0
     timeout: 300
 
 - name: Gathering facts
-  setup:
+  ansible.builtin.setup:
 
-- include_tasks: "swap.yml"
+- ansible.builtin.include_tasks: "swap.yml"
 
-- include_tasks: "expand-file-system.yml"
+- ansible.builtin.include_tasks: "expand-file-system.yml"
 
-- include_tasks: "cmdline.yml"
+- ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/cmdline.txt"
   when: ansible_distribution != "Ubuntu"
 
 # Ubuntu is a special case which has their cmdline.txt in different places,
 # depending on if BT is enabled or not
-- include_tasks: "cmdline.yml"
+- ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/firmware/nobtcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
-- include_tasks: "cmdline.yml"
+- ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/firmware/btcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
-- include_tasks: "ssh.yml"
+- ansible.builtin.include_tasks: "ssh.yml"
 
-- include_tasks: "hostnames.yml"
+- ansible.builtin.include_tasks: "hostnames.yml"
 
-- include_tasks: "locale.yml"
+- ansible.builtin.include_tasks: "locale.yml"
 
-- include_tasks: "wireless.yml"
+- ansible.builtin.include_tasks: "wireless.yml"
   when:
     - ansible_lsb.id == "Raspbian"
     # This really should be if there is a wireless network
 
-- include_tasks: "apt.yml"
+- ansible.builtin.include_tasks: "apt.yml"
 
-- include_tasks: "ntp.yml"
+- ansible.builtin.include_tasks: "ntp.yml"
 
 - name: do facts module to get latest information
-  setup:
+  ansible.builtin.setup:
 
