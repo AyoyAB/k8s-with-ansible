@@ -1,3 +1,3 @@
-CRIO_VERSION: 1.23
+CRIO_VERSION: 1.27
 
 trusted_registry_cas: []
