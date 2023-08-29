@@ -1,4 +1,5 @@
-- hosts: "{{ hosts | default('nodes') }}"
+- name: setup the nodes
+  hosts: "{{ hosts | default('nodes') }}"
   any_errors_fatal: true
   roles:
     - name: Join the nodes to the cluster

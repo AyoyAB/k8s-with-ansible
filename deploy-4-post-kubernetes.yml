@@ -1,4 +1,5 @@
-- hosts: localhost
+- name: setup the post k8s with argo-cd
+  hosts: localhost
   any_errors_fatal: true
   roles:
     - name: Run post-kubernetes tasks

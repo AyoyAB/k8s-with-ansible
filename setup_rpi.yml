@@ -1,4 +1,5 @@
-- hosts: "{{ hosts | default('all') }}"
+- name: setup the raspberry pi
+  hosts: "{{ hosts | default('all') }}"
   any_errors_fatal: true
   become: true
   gather_facts: no

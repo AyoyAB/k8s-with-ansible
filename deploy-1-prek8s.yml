@@ -1,4 +1,5 @@
-- hosts: "{{ hosts | default('all') }}"
+- name: install the prerequisites
+  hosts: "{{ hosts | default('all') }}"
   any_errors_fatal: true
   become: true
   gather_facts: yes

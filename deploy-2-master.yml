@@ -1,4 +1,5 @@
-- hosts: "{{ hosts | default('masters') }}"
+- name: setup the masters
+  hosts: "{{ hosts | default('masters') }}"
   any_errors_fatal: true
   roles:
     - name: Create the cluster
