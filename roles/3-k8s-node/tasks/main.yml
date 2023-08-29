@@ -20,6 +20,8 @@
       {{ init_opts }}
   vars:
     init_opts: ""
+  register: images_pulled
+  changed_when: '" Pulled " in images_pulled.stdout'
 
 - name: node - Join nodes to cluster
   ansible.builtin.include_tasks: "join.yml"
@@ -46,6 +48,8 @@
       jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
       xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         certificate approve
+  register: certificate_approval
+  changed_when: '" approved" in certificate_approval.stdout'
 
 - name: node - Wait for node to be ready
   delegate_to: localhost
@@ -58,6 +62,7 @@
   with_items: "{{ groups['nodes'] }}"
   delay: 5
   retries: 12
+  changed_when: false
 
 - name: node - Wait for the rest of the CSRs
   ansible.builtin.pause:
@@ -73,3 +78,5 @@
       jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
       xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         certificate approve
+  register: certificate_approval
+  changed_when: '" approved" in certificate_approval.stdout'

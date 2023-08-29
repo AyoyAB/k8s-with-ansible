@@ -2,6 +2,7 @@
   ansible.builtin.shell:
     cmd: kubeadm reset --force
   become: true
+  changed_when: true
 
 - name: Remove CNI config
   ansible.builtin.file:
@@ -25,6 +26,7 @@
   ansible.builtin.shell:
     cmd: iptables -F && iptables -t nat -F
   become: true
+  changed_when: true
 
 - name: Reboot
   become: true

@@ -2,6 +2,7 @@
   ansible.builtin.command: 'grep "{{ item }}" {{ cmdline }}'
   register: test_grep1
   ignore_errors: yes
+  changed_when: false
 
 - name: Add entry to cmdline "{{ item }}"
   ansible.builtin.lineinfile:

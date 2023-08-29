@@ -27,6 +27,8 @@
       {{ init_opts }}
   vars:
     init_opts: ""
+  register: images_pulled
+  changed_when: '" Pulled " in images_pulled.stdout'
 
 - name: master - Init first master of cluster
   ansible.builtin.include_tasks: "first-master.yml"

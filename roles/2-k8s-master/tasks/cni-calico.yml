@@ -14,6 +14,7 @@
     - (crd_status.stdout_lines[0]|int > 0)
   retries: 12
   delay: 5
+  changed_when: false
 
 - name: calico - Wait for operator to setup CRDs
   ansible.builtin.shell:
@@ -23,6 +24,7 @@
   until: (crd_status.stdout_lines[0]|int > 0)
   retries: 12
   delay: 5
+  changed_when: false
 
 - name: calico - Configure calico operator
   delegate_to: localhost

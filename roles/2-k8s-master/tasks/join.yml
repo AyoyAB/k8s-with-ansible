@@ -4,12 +4,14 @@
     kubeadm reset \
       --force
   register: reset_cluster
+  changed_when: true
 
 - name: secondary-master - Flush iptables
   become: true
   ansible.builtin.shell: |
     iptables --flush && \
     iptables -tnat --flush
+  changed_when: true
 
 #- ansible.builtin.debug:
 #    var: hostvars[groups['masters'][0]]['certificate_key'][0]
@@ -31,6 +33,7 @@
   until: "init_cluster.rc == 0"
   retries: 60
   delay: 10
+  changed_when: true
 
 - ansible.builtin.debug:
     var: init_cluster
@@ -45,6 +48,8 @@
       jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
       xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         certificate approve
+  register: certificate_approval
+  changed_when: '" approved" in certificate_approval.stdout'
 
 # Wait until the API of the master is up.
 - ansible.builtin.include_tasks: probes-api.yaml

@@ -2,6 +2,7 @@
   become: true
   ansible.builtin.shell: "kubeadm reset --force"
   register: reset_cluster
+  changed_when: true
 
 - name: node - Flush iptables
   become: true
@@ -9,6 +10,7 @@
     iptables --flush && \
     iptables -tnat --flush
   when: not kubeadm_ca.stat.exists
+  changed_when: true
 
 - name: node - Join Kubernetes cluster
   become: true
@@ -20,6 +22,7 @@
       --ignore-preflight-errors="{{ ignore_pre_flight_errors }}" \
       {{ kube_api_endpoint }}:6443
   register: init_cluster
+  changed_when: true
 
 - name: Enable and check kubelet service
   ansible.builtin.systemd:

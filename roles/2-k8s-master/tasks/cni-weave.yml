@@ -11,25 +11,12 @@
 
 # Because of bug in weave the image isn't ARM
 # https://github.com/weaveworks/weave/issues/3842
-- name: first-master - Creates directory ~/weave-net
-  become: false
-  ansible.builtin.file:
-    path: ~/weave-net
-    state: directory
-
-- name: first-master - Copy over weave configuration
-  ansible.builtin.template:
-    src: ./templates/{{item}}
-    dest: ~/weave-net/{{item}}
-  with_items:
-    - weave.yaml
-
 - name: Deploy weave network into cluster
   become: false
-  when: init_cluster is succeeded
-  ansible.builtin.shell: |
-    kubectl \
-        apply -f ~/weave-net/weave.yaml
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
+    template: templates/weave.yaml
   register: create_result
   until: create_result.rc == 0
   retries: 5
@@ -43,7 +30,12 @@
 - ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: first-master - Wait for the network to be installed before joining the other masters.
-  ansible.builtin.shell: "kubectl -n kube-system get DaemonSet weave-net -o json | jq '.status.numberReady'"
+  delegate_to: localhost
+  ansible.builtin.shell:
+    command: |
+      kubectl --kubeconfig "{{ k8s_files_kubeconfig }}" \
+      -n kube-system \
+      get DaemonSet weave-net -o json | jq '.status.numberReady'
   changed_when: false
   register: numberReady
   until: numberReady.stdout == "1"

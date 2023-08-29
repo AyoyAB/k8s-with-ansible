@@ -37,6 +37,7 @@
 - name: Sync time initialy
   ansible.builtin.shell: ntpd -gq
   when: ntp_status.changed
+  changed_when: false
 
 
 - name: Make sure NTP is started up
