@@ -15,6 +15,7 @@ docker_io_repository_host: registry.okd4.example.com:5010
 # pre k8s variables
 kubernetes_version: 1.28.1
 # Last version in each minor at the time of writing
+# 1.28.1
 # 1.27.5
 # 1.26.8
 # 1.25.13
