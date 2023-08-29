@@ -25,8 +25,8 @@ kubernetes_version: 1.28.1
 # 1.20.15
 # stable-1
 kube_api_endpoint: api.{{ cluster_name }}.{{ base_domain }}
-container_environment: crio # crio or containerd
-k8s_cni: calico # calico or weave
+container_environment: crio  # crio or containerd
+k8s_cni: calico              # calico or weave
 k8s_files_kubeconfig: "{{ playbook_dir }}/k8s-files/auth/config"
 trusted_registry_cas:
   - host: registry.okd4.example.com:5010
