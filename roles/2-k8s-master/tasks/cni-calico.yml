@@ -6,7 +6,9 @@
 
 - name: Calico - Wait for operator to setup CRDs
   ansible.builtin.shell:
+    executable: /bin/bash
     cmd: |
+      set -o pipefail #
       kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
   register: crd_status
   until:
@@ -18,7 +20,9 @@
 
 - name: Calico - Wait for operator to setup CRDs
   ansible.builtin.shell:
+    executable: /bin/bash
     cmd: |
+      set -o pipefail #
       kubectl get crd  -o json | jq -r '[.items[].metadata | select(.name == "installations.operator.tigera.io")] | length'
   register: crd_status
   until: (crd_status.stdout_lines[0]|int > 0)
@@ -35,7 +39,11 @@
 - ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: Calico - Wait for the network to be installed before joining the other masters.
-  ansible.builtin.shell: "kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'"
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl -n calico-system get DaemonSet {{ item }} -o json | jq '.status.numberReady'
   changed_when: false
   register: number_ready
   until: number_ready.stdout == "1"
@@ -46,7 +54,11 @@
     - csi-node-driver
 
 - name: Calico - Wait for the network to be installed before joining the other masters.
-  ansible.builtin.shell: "kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl -n calico-system get deploy {{ item }} -o json | jq '.status.availableReplicas'
   changed_when: false
   register: number_ready
   until: number_ready.stdout|int > 0
@@ -57,7 +69,11 @@
     - calico-typha
 
 - name: Calico - Wait for the network to be installed before joining the other masters.
-  ansible.builtin.shell: "kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'"
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl -n calico-apiserver get deploy {{ item }} -o json | jq '.status.availableReplicas'
   changed_when: false
   register: number_ready
   until: number_ready.stdout|int > 0

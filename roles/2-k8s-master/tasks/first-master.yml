@@ -73,7 +73,9 @@
 - name: First-master - Approve kubelet certificates
   delegate_to: localhost
   ansible.builtin.shell:
+    executable: /bin/bash
     cmd: |
+      set -o pipefail #
       kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
         get csr \
         -o json |\
@@ -113,7 +115,11 @@
 - ansible.builtin.include_tasks: all-pods-running.yaml
 
 - name: First-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
-  ansible.builtin.shell: "kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'"
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'
   changed_when: false
   register: number_ready
   until: number_ready.stdout|int > 0
