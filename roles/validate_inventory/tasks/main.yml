@@ -6,10 +6,10 @@
   delegate_to: localhost
   run_once: true
 
-- name: Validate inventory has load balancers.
+- name: Validate inventory has infra nodes.
   ansible.builtin.fail:
-    msg: "[ERROR] Inventory does not have at least one load balancer."
-  when: (groups.lbs is not defined) or (groups.lbs|length < 1)
+    msg: "[ERROR] Inventory does not have at least one infra node balancer."
+  when: (groups.infras is not defined) or (groups.infras|length < 1)
   delegate_to: localhost
   run_once: true
 
