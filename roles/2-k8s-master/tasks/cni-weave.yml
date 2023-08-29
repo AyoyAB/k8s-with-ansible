@@ -27,7 +27,8 @@
   ansible.builtin.pause:
     seconds: 90
 
-- ansible.builtin.include_tasks: "probes-api.yaml"
+- name: Weave - Wait for all probes to be up.
+  ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: Weave - Wait for the network to be installed before joining the other masters.
   delegate_to: localhost

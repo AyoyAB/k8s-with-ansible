@@ -4,10 +4,8 @@
   register: task_result
   notify: Reboot
 
-- ansible.builtin.debug: var=task_result
-
-- ansible.builtin.debug:
-    msg: "{{ lookup('community.general.dig', inventory_hostname) }}	{{ inventory_hostname }}"
+- name: Show the result
+  ansible.builtin.debug: var=task_result
 
 - name: Build /etc/hosts localhost
   ansible.builtin.lineinfile:

@@ -2,10 +2,12 @@
   ansible.builtin.set_fact:
     crio_os: "Debian_{{ ansible_distribution_major_version }}"
 
-- ansible.builtin.debug:
+- name: Show crio_os
+  ansible.builtin.debug:
     var: crio_os
 
-- ansible.builtin.debug:
+- name: Show crio_version
+  ansible.builtin.debug:
     var: crio_version
 
 - name: Install backports on Debian <11

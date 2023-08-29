@@ -8,11 +8,13 @@
   register: kubeadm_ca
 
 # First clean secondary masters, leaving the primary.
-- ansible.builtin.include_tasks: clean.yaml
+- name: Master - Clean out previous installation on secondary masters
+  ansible.builtin.include_tasks: clean.yaml
   when: kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
 
 # Then clean the primary master.
-- ansible.builtin.include_tasks: clean.yaml
+- name: Master - Clean out previous installation on primary master
+  ansible.builtin.include_tasks: clean.yaml
   when: kubeadm_ca.stat.exists and inventory_hostname == groups['masters'][0]
 
 - name: Master - Will be installing this kubernetes version
@@ -57,7 +59,8 @@
 - name: Master - Validate load balancer
   ansible.builtin.include_tasks: validate-loadbalancer.yaml
 
-- ansible.builtin.include_tasks: all-pods-running.yaml
+- name: Master - Verify all pods are running
+  ansible.builtin.include_tasks: all-pods-running.yaml
 
-- name: Master - do facts module to get latest information
+- name: Master - Do facts module to get latest information
   ansible.builtin.setup:

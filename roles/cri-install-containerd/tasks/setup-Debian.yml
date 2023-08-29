@@ -1,7 +1,18 @@
-- ansible.builtin.debug: var=ansible_distribution_release
-- ansible.builtin.debug: var=ansible_distribution
-- ansible.builtin.debug: var=ansible_architecture
-- ansible.builtin.debug: var=ansible_lsb.id
+- name: Show distribution release
+  ansible.builtin.debug:
+    var: ansible_distribution_release
+
+- name: Show distribution
+  ansible.builtin.debug:
+    var: ansible_distribution
+
+- name: Show architecture
+  ansible.builtin.debug:
+    var: ansible_architecture
+
+- name: Show lsb id
+  ansible.builtin.debug:
+    var: ansible_lsb.id
 
 - name: Configure containerd modules startup
   become: true

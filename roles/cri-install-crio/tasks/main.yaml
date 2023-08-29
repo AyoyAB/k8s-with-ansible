@@ -1,8 +1,22 @@
-- ansible.builtin.debug: var=ansible_distribution_release
-- ansible.builtin.debug: var=ansible_distribution_major_version
-- ansible.builtin.debug: var=ansible_distribution
-- ansible.builtin.debug: var=ansible_architecture
-- ansible.builtin.debug: var=ansible_lsb.id
+- name: Cri-o - Show distribution release
+  ansible.builtin.debug:
+    var: ansible_distribution_release
+
+- name: Cri-o - Show distribution major version
+  ansible.builtin.debug:
+    var: ansible_distribution_major_version
+
+- name: Cri-o - Show distribution
+  ansible.builtin.debug:
+    var: ansible_distribution
+
+- name: Cri-o - Show architecture
+  ansible.builtin.debug:
+    var: ansible_architecture
+
+- name: Cri-o - Show lsb id
+  ansible.builtin.debug:
+    var: ansible_lsb.id
 
 - name: Cri-o - Retrive cri-o version from kubernetes version
   ansible.builtin.set_fact:
@@ -19,10 +33,12 @@
   when: kube_minor_version == ""
   ignore_errors: True
 
-- ansible.builtin.debug:
+- name: Cri-o - Show the cri-o version to install.
+  ansible.builtin.debug:
     msg: "Will use cri-o version {{ crio_version }}"
 
-- ansible.builtin.pause:
+- name: Wait for very long to show the version to install when it's not detected from the kubernetes version
+  ansible.builtin.pause:
     seconds: 3600
   when: kube_minor_version == ""
 
@@ -30,7 +46,8 @@
   when: ansible_distribution == "Debian"
   ansible.builtin.include_tasks: install_debian.yaml
 
-- ansible.builtin.fail:
+- name: Cri-o - Fail for unsupported OS
+  ansible.builtin.fail:
     msg: Cri-o - Unsupported OS
   when: ansible_distribution != "Debian"
 

@@ -1,9 +1,11 @@
-- ansible.builtin.include_tasks: setup-Debian.yml
+- name: Install containerd on debian
+  ansible.builtin.include_tasks: setup-Debian.yml
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution != 'Ubuntu'
 
-- ansible.builtin.include_tasks: setup-Ubuntu.yml
+- name: Install containerd on Ubuntu
+  ansible.builtin.include_tasks: setup-Ubuntu.yml
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution == 'Ubuntu'

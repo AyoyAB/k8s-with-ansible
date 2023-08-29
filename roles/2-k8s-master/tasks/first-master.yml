@@ -36,15 +36,19 @@
   register: init_cluster
   changed_when: true
 
-- ansible.builtin.debug:
+- name: First-master - Show result of cluster initialization.
+  ansible.builtin.debug:
     var: init_cluster.stdout_lines
 
-- ansible.builtin.set_fact:
+- name: First-master - Retrieve the certificate key from kubeadm init
+  ansible.builtin.set_fact:
     certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"
   vars:
     regexp: '--certificate-key ([a-f0-9]*)'
 
-- ansible.builtin.debug: var=certificate_key
+- name: Show the certificate key
+  ansible.builtin.debug:
+    var: certificate_key
 
 - name: First-master - Create Kubernetes config directory
   become: true
@@ -85,22 +89,27 @@
   register: certificate_approval
   changed_when: '" approved" in certificate_approval.stdout'
 
-- ansible.builtin.include_tasks: "probes-api.yaml"
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: First-master - Wait before checking if the system is ok again.
   ansible.builtin.pause:
     seconds: 60
 
-- ansible.builtin.include_tasks: probes-api.yaml
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: probes-api.yaml
 
 #####################################
-- ansible.builtin.include_tasks: "cni-calico.yml"
+- name: First-master - Install Calico CNI
+  ansible.builtin.include_tasks: "cni-calico.yml"
   when: k8s_cni == "calico"
 
-- ansible.builtin.include_tasks: "cni-weave.yml"
+- name: First-master - Install weave CNI
+  ansible.builtin.include_tasks: "cni-weave.yml"
   when: k8s_cni == "weave"
 
-- when:
+- name: First-master - Verify a valid CNI has been chosen.
+  when:
     - k8s_cni != "calico"
     - k8s_cni != "weave"
   ansible.builtin.fail:
@@ -111,8 +120,11 @@
   ansible.builtin.pause:
     seconds: 180
 
-- ansible.builtin.include_tasks: probes-api.yaml
-- ansible.builtin.include_tasks: all-pods-running.yaml
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: probes-api.yaml
+
+- name: First-master - Verify all pods are running
+  ansible.builtin.include_tasks: all-pods-running.yaml
 
 - name: First-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
   ansible.builtin.shell:

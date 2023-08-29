@@ -9,41 +9,52 @@
 - name: Gathering facts
   ansible.builtin.setup:
 
-- ansible.builtin.include_tasks: "swap.yml"
+- name: Disable swap
+  ansible.builtin.include_tasks: "swap.yml"
 
-- ansible.builtin.include_tasks: "expand-file-system.yml"
+- name: Expand the filesystem
+  ansible.builtin.include_tasks: "expand-file-system.yml"
 
-- ansible.builtin.include_tasks: "cmdline.yml"
+- name: Setup cmdline.txt
+  ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/cmdline.txt"
   when: ansible_distribution != "Ubuntu"
 
 # Ubuntu is a special case which has their cmdline.txt in different places,
 # depending on if BT is enabled or not
-- ansible.builtin.include_tasks: "cmdline.yml"
+- name: Setup cmdline.txt
+  ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/firmware/nobtcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
-- ansible.builtin.include_tasks: "cmdline.yml"
+- name: Setup cmdline.txt
+  ansible.builtin.include_tasks: "cmdline.yml"
   vars:
     - cmdline: "/boot/firmware/btcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
-- ansible.builtin.include_tasks: "ssh.yml"
+- name: Setup SSH configuration
+  ansible.builtin.include_tasks: "ssh.yml"
 
-- ansible.builtin.include_tasks: "hostnames.yml"
+- name: Setup hostnames
+  ansible.builtin.include_tasks: "hostnames.yml"
 
-- ansible.builtin.include_tasks: "locale.yml"
+- name: Setup locale configuration
+  ansible.builtin.include_tasks: "locale.yml"
 
-- ansible.builtin.include_tasks: "wireless.yml"
+- name: Setup wireless configuration
+  ansible.builtin.include_tasks: "wireless.yml"
   when:
     - ansible_lsb.id == "Raspbian"
     # This really should be if there is a wireless network
 
-- ansible.builtin.include_tasks: "apt.yml"
+- name: Setup apt
+  ansible.builtin.include_tasks: "apt.yml"
 
-- ansible.builtin.include_tasks: "ntp.yml"
+- name: Setup NTP.
+  ansible.builtin.include_tasks: "ntp.yml"
 
 - name: Do facts module to get latest information
   ansible.builtin.setup:

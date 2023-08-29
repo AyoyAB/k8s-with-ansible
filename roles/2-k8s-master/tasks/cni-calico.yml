@@ -36,7 +36,8 @@
     kubeconfig: "{{ k8s_files_kubeconfig }}"
     template: templates/calico.yaml
 
-- ansible.builtin.include_tasks: "probes-api.yaml"
+- name: Calico - Wait for all probes to be up.
+  ansible.builtin.include_tasks: "probes-api.yaml"
 
 - name: Calico - Wait for the network to be installed before joining the other masters.
   ansible.builtin.shell:

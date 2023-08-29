@@ -35,7 +35,8 @@
   delay: 10
   changed_when: true
 
-- ansible.builtin.debug:
+- name: Secondary-master - Show the result of joining the cluster
+  ansible.builtin.debug:
     var: init_cluster
 
 - name: Secondary-master - Approve kubelet certificates
@@ -53,8 +54,8 @@
   register: certificate_approval
   changed_when: '" approved" in certificate_approval.stdout'
 
-# Wait until the API of the master is up.
-- ansible.builtin.include_tasks: probes-api.yaml
+- name: Secondary-master - Wait until the API of the master is up.
+  ansible.builtin.include_tasks: probes-api.yaml
 
 - name: Secondary-master - Enable and check kubelet service
   ansible.builtin.systemd:
