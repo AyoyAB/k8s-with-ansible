@@ -16,7 +16,7 @@
     src: templates/ntp.conf
     dest: /etc/ntp.conf
     mode: '644'
-  register: ntp_status
+  notify: Restart NTP service
 
 - name: Make ntp directories
   ansible.builtin.file:
@@ -29,19 +29,8 @@
     - /etc/ntp/crypto/pw
     - /etc/ntp/keys
 
-- name: Make sure NTP is stopped
-  ansible.builtin.service:
-    name: ntp
-    state: stopped
-    enabled: yes
-  when: ntp_status.changed
-
-
-- name: Sync time initialy
-  ansible.builtin.command: ntpd -gq
-  when: ntp_status.changed
-  changed_when: false
-
+- name: Restart service if required
+  ansible.builtin.meta: flush_handlers
 
 - name: Make sure NTP is started up
   ansible.builtin.service:
