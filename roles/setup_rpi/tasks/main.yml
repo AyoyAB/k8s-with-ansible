@@ -53,4 +53,3 @@
 
 - name: Do facts module to get latest information
   ansible.builtin.setup:
-

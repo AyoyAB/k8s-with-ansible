@@ -33,4 +33,3 @@
     enabled: true
   become: true
   register: started_kubelet
-
