@@ -37,7 +37,7 @@
   ansible.builtin.include_tasks: "first-master.yml"
   when: inventory_hostname == groups['masters'][0]
   vars:
-    - kubeadmin_config: /etc/kubernetes/admin.conf
+    kubeadmin_config: /etc/kubernetes/admin.conf
 
 - name: Master - Validate load balancer
   ansible.builtin.include_tasks: validate-loadbalancer.yaml
