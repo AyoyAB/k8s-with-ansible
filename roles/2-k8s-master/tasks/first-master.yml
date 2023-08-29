@@ -36,7 +36,8 @@
   register: init_cluster
   changed_when: true
 
-- ansible.builtin.debug: var=init_cluster.stdout_lines
+- ansible.builtin.debug:
+    var: init_cluster.stdout_lines
 
 - ansible.builtin.set_fact:
     certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"

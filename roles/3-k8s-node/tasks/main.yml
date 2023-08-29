@@ -16,10 +16,7 @@
   become: true
   ansible.builtin.shell: |
     kubeadm config images pull \
-      --kubernetes-version {{ kubernetes_version }} \
-      {{ init_opts }}
-  vars:
-    init_opts: ""
+      --kubernetes-version {{ kubernetes_version }}
   register: images_pulled
   changed_when: '" Pulled " in images_pulled.stdout'
 
