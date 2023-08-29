@@ -1,5 +1,6 @@
 - name: Node - Check swap is disabled
-  ansible.builtin.fail: msg="Swap has to be disabled"
+  ansible.builtin.fail:
+    msg: "Swap has to be disabled"
   when: ansible_swaptotal_mb > 0
 
 - name: Node - Check if kubeadm has already run
