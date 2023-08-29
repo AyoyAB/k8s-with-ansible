@@ -15,7 +15,7 @@
 - name: Setup cmdline.txt
   ansible.builtin.include_tasks: "cmdline.yml"
   vars:
-    - cmdline: "/boot/cmdline.txt"
+    cmdline: "/boot/cmdline.txt"
   when: ansible_distribution != "Ubuntu"
 
 # Ubuntu is a special case which has their cmdline.txt in different places,
@@ -23,13 +23,13 @@
 - name: Setup cmdline.txt
   ansible.builtin.include_tasks: "cmdline.yml"
   vars:
-    - cmdline: "/boot/firmware/nobtcmd.txt"
+    cmdline: "/boot/firmware/nobtcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
 - name: Setup cmdline.txt
   ansible.builtin.include_tasks: "cmdline.yml"
   vars:
-    - cmdline: "/boot/firmware/btcmd.txt"
+    cmdline: "/boot/firmware/btcmd.txt"
   when: ansible_distribution == "Ubuntu"
 
 - name: Setup SSH configuration
