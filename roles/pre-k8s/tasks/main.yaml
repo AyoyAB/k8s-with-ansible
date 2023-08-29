@@ -1,6 +1,3 @@
-- ansible.builtin.debug:
-    var: container_environment
-
 - name: Add an Apt signing key for Kubernetes repo, uses whichever key is at the URL
   retries: 5
   delay: 5
@@ -33,7 +30,6 @@
     packages:
       - kubeadm={{ kubernetes_version+'-*' }}
       - kubelet={{ kubernetes_version+'-*' }}
-
 
 - name: Install kubeadm and kubelet with latest version
   retries: 6

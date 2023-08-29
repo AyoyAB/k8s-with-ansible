@@ -28,11 +28,6 @@
     kubeadm init \
       --config kubeadm.yaml \
       --upload-certs
-  vars:
-    service_cidr:     "10.96.0.0/12"
-    master_ip:        "0.0.0.0"
-    kubeadm_opts:     "--token-ttl 0 "
-    init_opts:        ""
   register: init_cluster
   changed_when: true
 
