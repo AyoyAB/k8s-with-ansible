@@ -10,7 +10,7 @@
     iptables -tnat --flush
   when: not kubeadm_ca.stat.exists
 
-- name: node - Init Kubernetes cluster
+- name: node - Join Kubernetes cluster
   become: true
   when: reset_cluster is succeeded
   shell: |
