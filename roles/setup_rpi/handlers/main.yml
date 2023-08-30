@@ -3,4 +3,4 @@
   ansible.builtin.reboot:
 
 - name: Initial NTP sync
-  include_tasks: ntp-sync.yml
+  ansible.builtin.include_tasks: ntp-sync.yml
