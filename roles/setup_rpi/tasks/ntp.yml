@@ -17,7 +17,7 @@
     src: templates/ntp.conf
     dest: /etc/ntp.conf
     mode: '644'
-  notify: Restart NTP service
+  notify: Initial NTP sync
 
 - name: Make ntp directories
   ansible.builtin.file:

@@ -2,14 +2,5 @@
 - name: Reboot
   ansible.builtin.reboot:
 
-- name: Restart NTP service
-  block:
-    - name: Make sure NTP is stopped
-      ansible.builtin.service:
-        name: ntp
-        state: stopped
-        enabled: true
-
-    - name: Sync time initially
-      ansible.builtin.command: ntpd -gq
-      changed_when: false
+- name: Initial NTP sync
+  include_tasks: ntp-sync.yml
