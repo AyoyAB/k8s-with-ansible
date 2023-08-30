@@ -1,54 +1,68 @@
-- name: master - Check swap is disabled
-  fail: msg="Swap has to be disabled"
+---
+- name: Master - Check swap is disabled
+  ansible.builtin.fail:
+    msg: "Swap has to be disabled"
   when: ansible_swaptotal_mb > 0
 
-- include_tasks: "weave.yml"
-
-- name: master - Check if kubeadm has already run
-  stat:
+- name: Master - Check if kubeadm has already run
+  ansible.builtin.stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
-- name: master - Will be installing this kubernetes version
-  debug:
+# First clean secondary masters, leaving the primary.
+- name: Master - Clean out previous installation on secondary masters
+  ansible.builtin.include_tasks: clean.yaml
+  when: kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
+
+# Then clean the primary master.
+- name: Master - Clean out previous installation on primary master
+  ansible.builtin.include_tasks: clean.yaml
+  when: kubeadm_ca.stat.exists and inventory_hostname == groups['masters'][0]
+
+- name: Master - Will be installing this kubernetes version
+  ansible.builtin.debug:
     msg: "{{ kubernetes_version | default('stable-1') }}"
 
-- name: master - Pull the Kubernetes images
-  become: yes
-  shell: |
+- name: Master - Pull the Kubernetes images
+  become: true
+  ansible.builtin.shell: |
     kubeadm config images pull \
-      --kubernetes-version {{ kube_version }} \
+      --kubernetes-version {{ kubernetes_version }} \
       {{ init_opts }}
   vars:
-    kube_version: "{{ kubernetes_version | default('stable-1') }}"
     init_opts: ""
+  register: images_pulled
+  changed_when: '" Pulled " in images_pulled.stdout'
 
-- debug: var=groups['masters'][0]
-
-
-- name: master - Init cluster if needed
-  include_tasks: "first-master.yml"
-  when: not kubeadm_ca.stat.exists and inventory_hostname == groups['masters'][0]
-  run_once: yes
+- name: Master - Init first master of cluster
+  ansible.builtin.include_tasks: "first-master.yml"
+  when: inventory_hostname == groups['masters'][0]
   vars:
-    - kubeadmin_config: /etc/kubernetes/admin.conf
+    kubeadmin_config: /etc/kubernetes/admin.conf
 
+- name: Master - Validate load balancer
+  ansible.builtin.include_tasks: validate-loadbalancer.yaml
 
+- name: Master - Join other masters to cluster
+  ansible.builtin.include_tasks: "join.yml"
+  when: not inventory_hostname == groups['masters'][0]
 
-- name: master - Join new masters if needed
-  include_tasks: "join.yml"
-  when: not kubeadm_ca.stat.exists and not inventory_hostname == groups['masters'][0]
-
-
-- name: master - Enable and check kubelet service
-  systemd:
+- name: Master - Enable and check kubelet service
+  ansible.builtin.systemd:
     name: kubelet
-    daemon_reload: yes
+    daemon_reload: true
     state: started
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
   register: started_kubelet
 
+# It seems the API server is restarted after joining the secondary master.
+# Just wait it out.
+- name: Master - Validate load balancer
+  ansible.builtin.include_tasks: validate-loadbalancer.yaml
 
-- name: master - do facts module to get latest information
-  setup:
+- name: Master - Verify all pods are running
+  ansible.builtin.include_tasks: all-pods-running.yaml
+
+- name: Master - Do facts module to get latest information
+  ansible.builtin.setup:

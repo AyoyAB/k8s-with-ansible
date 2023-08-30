@@ -1,0 +1,30 @@
+---
+- name: Validate inventory is not empty.
+  ansible.builtin.fail:
+    msg: "[ERROR] Empty inventory. No host available."
+  when: (groups.all is not defined) or (groups.all|length == 0)
+  delegate_to: localhost
+  run_once: true
+
+- name: Validate inventory has infra nodes.
+  ansible.builtin.fail:
+    msg: "[ERROR] Inventory does not have at least one infra node balancer."
+  when: (groups.infras is not defined) or (groups.infras|length < 1)
+  delegate_to: localhost
+  run_once: true
+
+# This installation script needs at least one master
+- name: Validate inventory has masters.
+  ansible.builtin.fail:
+    msg: "[ERROR] Inventory does not have at least one master."
+  when: (groups.masters is not defined) or (groups.masters|length < 1)
+  delegate_to: localhost
+  run_once: true
+
+# This installation script needs at least one node
+- name: Validate inventory has nodes.
+  ansible.builtin.fail:
+    msg: "[ERROR] Inventory does not have at least one node."
+  when: (groups.nodes is not defined) or (groups.nodes|length < 1)
+  delegate_to: localhost
+  run_once: true

@@ -1,7 +1,0 @@
-apiVersion: v2
-name: metrics-server
-appVersion: v0.3.7
-version: 0.1.0
-
-# This chart is created by fetching this file:
-# wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml

@@ -1,0 +1,26 @@
+---
+# Set the wireless regulatory area
+- name: Wireless - crda - Check if crda file exists
+  ansible.builtin.stat:
+    path: /etc/default/crda
+  register: crda
+
+- name: Wireless - crda - Set locale
+  ansible.builtin.replace:
+    destfile: /etc/default/crda
+    regexp: 'REGDOMAIN='
+    replace: 'REGDOMAIN=SE'
+  when: crda.stat.exists
+
+# Set the wireless regulatory area
+- name: Wireless - crda - Check if crda file exists
+  ansible.builtin.stat:
+    path: /etc/default/crda
+  register: setregdomain
+
+- name: Wireless - regdomain - Set locale
+  ansible.builtin.replace:
+    destfile: /lib/crda/setregdomain
+    regexp: 'REGDOMAIN='
+    replace: 'REGDOMAIN=SE'
+  when: setregdomain.stat.exists

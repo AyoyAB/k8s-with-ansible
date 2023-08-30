@@ -1,0 +1,16 @@
+---
+- name: Make sure all pods that are supposed to be running, are running
+  delegate_to: localhost
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl \
+        --kubeconfig {{ k8s_files_kubeconfig }} \
+        -n kube-system get pod -o json |\
+      jq -r '[.items[] | select(.status.phase != "Running")] | length'
+  register: result
+  until: result.stdout_lines[0]|int == 0
+  retries: 120
+  delay: 10
+  changed_when: false

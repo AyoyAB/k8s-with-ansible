@@ -1,0 +1,45 @@
+---
+# - name: Deploy weave network into cluster
+#  become: false
+#  when: init_cluster is succeeded
+#  ansible.builtin.shell: |
+#    kubectl \
+#        apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+#  register: create_result
+#  until: create_result.rc == 0
+#  retries: 5
+#  delay: 2
+
+# Because of bug in weave the image isn't ARM
+# https://github.com/weaveworks/weave/issues/3842
+- name: Weave - Deploy weave network into cluster
+  become: false
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
+    template: templates/weave.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 5
+  delay: 2
+
+# Wait for the network to be installed before joining the other masters.
+- name: Weave - Wait before checking if the network is ok.
+  ansible.builtin.pause:
+    seconds: 90
+
+- name: Weave - Wait for all probes to be up.
+  ansible.builtin.include_tasks: "probes-api.yaml"
+
+- name: Weave - Wait for the network to be installed before joining the other masters.
+  delegate_to: localhost
+  ansible.builtin.command:
+    cmd: |
+      kubectl --kubeconfig "{{ k8s_files_kubeconfig }}" \
+      -n kube-system \
+      get DaemonSet weave-net -o json | jq '.status.numberReady'
+  changed_when: false
+  register: number_ready
+  until: number_ready.stdout == "1"
+  retries: 12
+  delay: 10

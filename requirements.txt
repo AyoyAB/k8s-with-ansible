@@ -1,0 +1,5 @@
+ansible-compat==3.0.2
+ansible-core==2.15.0
+ansible-lint==6.15.0
+kubernetes==26.1.0
+dnspython==2.4.2

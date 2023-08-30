@@ -1,0 +1,79 @@
+---
+- name: Cri-o - Show distribution release
+  ansible.builtin.debug:
+    var: ansible_distribution_release
+
+- name: Cri-o - Show distribution major version
+  ansible.builtin.debug:
+    var: ansible_distribution_major_version
+
+- name: Cri-o - Show distribution
+  ansible.builtin.debug:
+    var: ansible_distribution
+
+- name: Cri-o - Show architecture
+  ansible.builtin.debug:
+    var: ansible_architecture
+
+- name: Cri-o - Show lsb id
+  ansible.builtin.debug:
+    var: ansible_lsb.id
+
+- name: Cri-o - Retrive cri-o version from kubernetes version
+  ansible.builtin.set_fact:
+    kube_minor_version: "{{ kubernetes_version | regex_search('^[0-9]+\\.[0-9]+') }}"
+  changed_when: false
+
+- name: Cri-o - Set version
+  ansible.builtin.set_fact:
+    crio_version: "{{ kube_minor_version }}"
+  when: not kube_minor_version == ""
+  changed_when: false
+
+- name: Cri-o - Check that cri-o version could be retrieved from kubernetes_version
+  ansible.builtin.fail:
+    msg: "Warning: Expected extracted version from '{{ kubernetes_version }}' not to be empty."
+  tags:
+    - skip_ansible_lint
+  when: kube_minor_version == ""
+  ignore_errors: true
+
+- name: Cri-o - Show the cri-o version to install.
+  ansible.builtin.debug:
+    msg: "Will use cri-o version {{ crio_version }}"
+
+- name: Wait for very long to show the version to install when it's not detected from the kubernetes version
+  ansible.builtin.pause:
+    seconds: 3600
+  when: kube_minor_version == ""
+
+- name: Cri-o - cri-install-crio - Install CRI-O on Debian
+  when: ansible_distribution == "Debian"
+  ansible.builtin.include_tasks: install_debian.yaml
+
+- name: Cri-o - Fail for unsupported OS
+  ansible.builtin.fail:
+    msg: Cri-o - Unsupported OS
+  when: ansible_distribution != "Debian"
+
+- name: Cri-o - Copy registries configuration
+  ansible.builtin.template:
+    dest: /etc/containers/registries.conf
+    src: templates/registries.conf
+    mode: '644'
+
+- name: Cri-o - Install trusted certificates
+  ansible.builtin.template:
+    src: templates/registry-certificate.crt
+    dest: "/usr/local/share/ca-certificates/{{ item.host }}.crt"
+    mode: '644'
+  with_items: "{{ trusted_registry_cas }}"
+  notify:
+    - Update-ca-certs
+    - Restart-crio
+
+- name: Cri-o - Make sure cri-o service unit is running
+  ansible.builtin.systemd:
+    enabled: true
+    state: started
+    name: crio

@@ -1,14 +1,21 @@
+---
 - name: Gathering facts
-  setup:
+  ansible.builtin.setup:
 
-- name: Check that the helm executable exists
-  stat:
-    path: /usr/local/bin/helm
-  register: stat_result
+- name: Create k8s argocd namespace
+  kubernetes.core.k8s:
+    name: argocd
+    api_version: v1
+    kind: Namespace
+    state: present
 
-- include_tasks: helm_install.yml
-  vars:
-    helm_version: "3.5.3"
-  when: not stat_result.stat.exists
+- name: Install argocd.
+  ansible.builtin.include_tasks: argocd-install.yml
+  when: argocd
 
-- include_tasks: helm.yml
+- name: Inject startup-secrete for sealed secrets
+  ansible.builtin.include_tasks: sealed-secrets.yaml
+
+- name: Configure argocd app-of-apps.
+  ansible.builtin.include_tasks: argocd-applications.yml
+  when: argocd

@@ -1,1 +1,5 @@
 .idea
+*.log
+sealed-secrets-secret.yml
+k8s-files
+*.tgz

@@ -1,0 +1,19 @@
+---
+# connection variables
+ansible_ssh_private_key_file: ~/.ssh/id_ansible
+ansible_ssh_host_key_checking: false
+host_key_checking: false
+ansible_ssh_common_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+
+# DNS variables
+base_domain: example.com
+cluster_name: k8s1
+
+# pre k8s variables
+kube_api_endpoint: api.{{ cluster_name }}.{{ base_domain }}
+container_environment: crio
+k8s_files_kubeconfig: "{{ playbook_dir }}/k8s-files/auth/config"
+
+# post k8s variables
+sealed_secrets: true
+argocd: true

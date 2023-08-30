@@ -1,0 +1,34 @@
+---
+- name: DNS lookup of {{ item }}
+  ansible.builtin.command: dig +short "{{ item }}"
+  register: ip_result
+  changed_when: false
+
+- name: Check if DNS lookup succeeded
+  ansible.builtin.fail:
+    msg: Dns lookup of {{ item }} failed!
+  when: ip_result.stdout == ""
+
+- name: Reverse DNS lookup of {{ item }}
+  ansible.builtin.command: dig +short -x "{{ ip_result.stdout }}"
+  register: reverse_result
+  changed_when: false
+
+- name: Check if reverse DNS lookup succeeded
+  ansible.builtin.pause:
+    prompt: |
+      Reverse DNS lookup of {{ item }} failed! IP {{ ip_result.stdout }} did not resolve to {{ item }}.
+      ----------------------------
+      - Press return to continue -
+      ----------------------------
+  when: reverse_result.stdout != (item + '.')
+
+- name: Validate additional DNS entries
+  ansible.builtin.command: dig +short "{{ test_domain }}"
+  register: test_domain_ip
+  failed_when: not test_domain_ip.stdout is search(ip_result.stdout)
+  loop: "{{ additional_domains }}"
+  loop_control:
+    loop_var: test_domain
+  changed_when: false
+  when: additional_domains is defined

@@ -1,0 +1,57 @@
+---
+- name: Set debian variable
+  ansible.builtin.set_fact:
+    crio_os: "Debian_{{ ansible_distribution_major_version }}"
+
+- name: Show crio_os
+  ansible.builtin.debug:
+    var: crio_os
+
+- name: Show crio_version
+  ansible.builtin.debug:
+    var: crio_version
+
+- name: Install backports on Debian <11
+  when: ansible_distribution_major_version|int < 11
+  ansible.builtin.fail:
+    msg: "On Debian 10 libseccomp >= 2.4.1 is required, which requires backports. Simply put, this isn't tested and not supported"
+
+- name: Add opensuse apt key.
+  ansible.builtin.apt_key:
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key"
+    id: 2472D6D0D2F66AF87ABA8DA34D64390375060AA4
+    state: present
+
+- name: Add CRI-O apt key.
+  ansible.builtin.apt_key:
+    url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ crio_os }}/Release.key"
+    id: 2472D6D0D2F66AF87ABA8DA34D64390375060AA4
+    state: present
+
+- name: Add opensuse repo.
+  ansible.builtin.apt_repository:
+    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/ /"
+    state: present
+    update_cache: true
+
+- name: Add CRI-O repo.
+  ansible.builtin.apt_repository:
+    repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ crio_os }}/ /"
+    state: present
+    update_cache: true
+
+- name: Install crio cri-o-runc containernetworking-plugins package, which also installs crictl.
+  ansible.builtin.apt:
+    name:
+      - containernetworking-plugins
+      - cri-o
+      - cri-o-runc
+    state: present
+    update_cache: false
+
+- name: Configure crio modules startup
+  become: true
+  ansible.builtin.template:
+    src: ./templates/cri-o.conf
+    dest: /etc/modules-load.d/cri-o.conf
+    mode: '644'

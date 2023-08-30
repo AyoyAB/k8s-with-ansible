@@ -1,0 +1,59 @@
+---
+- name: Show distribution release
+  ansible.builtin.debug:
+    var: ansible_distribution_release
+
+- name: Show distribution
+  ansible.builtin.debug:
+    var: ansible_distribution
+
+- name: Show architecture
+  ansible.builtin.debug:
+    var: ansible_architecture
+
+- name: Show lsb id
+  ansible.builtin.debug:
+    var: ansible_lsb.id
+
+- name: Configure containerd modules startup
+  become: true
+  ansible.builtin.template:
+    src: ./templates/containerd.conf
+    dest: /etc/modules-load.d/containerd.conf
+    mode: '644'
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+
+- name: Get the architecture
+  ansible.builtin.command:
+    cmd: dpkg --print-architecture
+  register: arch
+  changed_when: false
+
+- name: Add Docker apt key.
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+
+- name: Add docker repo.
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=\"{{ arch.stdout_lines[0] }}\"] https://download.docker.com/linux/debian \"{{ ansible_distribution_release }}\" stable"
+    state: present
+    update_cache: true
+
+- name: Install containerd
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    update_cache: false
+  notify: Reboot

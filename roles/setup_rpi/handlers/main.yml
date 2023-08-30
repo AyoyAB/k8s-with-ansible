@@ -1,0 +1,6 @@
+---
+- name: Reboot
+  ansible.builtin.reboot:
+
+- name: Initial NTP sync
+  ansible.builtin.include_tasks: ntp-sync.yml

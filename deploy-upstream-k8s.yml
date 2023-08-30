@@ -1,30 +1,35 @@
-- hosts: all
+---
+- name: Gather facts
+  hosts: all
   any_errors_fatal: true
-  gather_facts: no
-- import_playbook: deploy-0-prereqs.yml
-  vars:
-    hosts: all
+  gather_facts: false
 
+- name: Validate the DNS settings
+  import_playbook: validate_dns.yml
 
-- import_playbook: deploy-1-prek8s.yml
-  vars:
-    hosts: all
-    container_environment: "{{ container_env | default('docker') }}"
+- name: Setup raspberry pis
+  import_playbook: setup_rpi.yml
+  when: inventory_hostname in groups['rpis']
 
+- name: Deploy kubernetes prerequisites
+  import_playbook: deploy-1-prek8s.yml
 
-- hosts: masters
-- import_playbook: deploy-2-master.yml
-  vars:
-    token: abcdef.0123456789abcdef
-    hosts: masters
+- name: Deploy loadbalancer
+  import_playbook: deploy-lbs.yml
+  when: inventory_hostname in groups['infras']
 
+- name: Deploy the masters
+  import_playbook: deploy-2-master.yml
+  when:
+    - inventory_hostname in groups['masters']
 
-- hosts: nodes
-- import_playbook: deploy-3-nodes.yml
-  vars:
-    token: abcdef.0123456789abcdef
-    hosts: nodes
+- name: Deploy nodes
+  import_playbook: deploy-3-nodes.yml
+  when:
+    - inventory_hostname in groups['nodes']
 
+- name: Switch to using localhost
+  hosts: localhost
 
-- hosts: masters[0]
-- import_playbook: deploy-4-post-kubernetes.yml
+- name: Deploy applications using argo-cd
+  import_playbook: deploy-4-post-kubernetes.yml

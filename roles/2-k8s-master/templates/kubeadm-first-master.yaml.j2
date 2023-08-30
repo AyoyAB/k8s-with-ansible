@@ -1,0 +1,38 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+bootstrapTokens:
+  - token: "{{ token }}"
+    description: "kubeadm bootstrap token"
+    ttl: "0"
+
+nodeRegistration:
+    ignorePreflightErrors:
+    {% for error in ignore_pre_flight_errors %}
+    - {{  error }}
+    {% endfor %}
+
+localAPIEndpoint:
+  advertiseAddress: "{{ master_ip }}"
+  bindPort: 6443
+
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+controlPlaneEndpoint: "{{ kube_api_endpoint }}:6443"
+kubernetesVersion: {{ kubernetes_version }}
+networking:
+  dnsDomain: cluster.local
+  podSubnet: {{ pod_network_cidr }}
+  serviceSubnet: {{ service_cidr }}
+
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+serverTLSBootstrap: true
+
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+
+---

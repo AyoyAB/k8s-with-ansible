@@ -1,0 +1,10 @@
+---
+- name: Setup the raspberry pi
+  hosts: "{{ hosts | default('all') }}"
+  any_errors_fatal: true
+  become: true
+  gather_facts: false
+  roles:
+    - role: setup_rpi
+      vars:
+        hosts: rpis

@@ -1,0 +1,4 @@
+---
+crio_version: 1.27
+
+trusted_registry_cas: []

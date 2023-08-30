@@ -1,0 +1,26 @@
+---
+- name: Check that you can call livez endpoint via load balancer https://{{ kube_api_endpoint }}:6443/livez?verbose
+  delegate_to: localhost
+  ansible.builtin.uri:
+    url: https://{{ kube_api_endpoint }}:6443/livez?verbose
+    validate_certs: false
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+  register: result
+  until: "result.status == 200"
+  retries: 120
+  delay: 10
+
+- name: Check that you can call readyz endpoint https://{{ kube_api_endpoint }}:6443/readyz?verbose
+  delegate_to: localhost
+  ansible.builtin.uri:
+    url: https://{{ kube_api_endpoint }}:6443/readyz?verbose
+    validate_certs: false
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+  register: result
+  until: "result.status == 200"
+  retries: 120
+  delay: 10

@@ -1,0 +1,16 @@
+---
+- name: Make sure NTP is stopped
+  ansible.builtin.service:
+    name: ntp
+    state: stopped
+    enabled: true
+
+- name: Sync time initially
+  ansible.builtin.command: ntpd -gq
+  changed_when: false
+
+- name: Make sure NTP is started
+  ansible.builtin.service:
+    name: ntp
+    state: started
+    enabled: true

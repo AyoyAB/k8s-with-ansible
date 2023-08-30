@@ -1,0 +1,8 @@
+---
+- name: Reboot
+  ansible.builtin.reboot:
+
+- name: Restart
+  ansible.builtin.service:
+    name: containerd
+    state: restarted

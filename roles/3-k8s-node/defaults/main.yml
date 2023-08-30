@@ -1,0 +1,4 @@
+---
+token: abcdef.0123456789abcdef
+
+ignore_pre_flight_errors: FileContent--proc-sys-net-bridge-bridge-nf-call-iptables

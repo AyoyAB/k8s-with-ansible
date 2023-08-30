@@ -1,0 +1,11 @@
+---
+apiVersion: v2
+name: argocd-custom
+version: 1.0.0
+
+description: Installs a customized version of argocd
+
+dependencies:
+  - name: argo-cd
+    version: 5.43.8
+    repository: https://argoproj.github.io/argo-helm

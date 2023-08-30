@@ -1,0 +1,25 @@
+---
+- name: Apply argocd helm installation.
+  kubernetes.core.helm:
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
+    release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
+    chart_ref: argocd
+    name: argocd
+
+- name: Make sure all pods that are supposed to be running, are running
+  delegate_to: localhost
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl \
+        --kubeconfig "{{ k8s_files_kubeconfig }}" \
+        -n argocd \
+        get pod -o json |\
+      jq -r '[.items[] | select(.status.phase != "Running")] | length'
+  register: result
+  until: result.stdout_lines[0]|int == 0
+  retries: 120
+  delay: 10
+  changed_when: false

@@ -1,0 +1,31 @@
+---
+- name: Check that you can call livez endpoint https://{{ inventory_hostname }}:6443/livez?verbose
+  ansible.builtin.uri:
+    url: https://{{ inventory_hostname }}:6443/livez?verbose
+    validate_certs: false
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+  register: result
+  until: "result.status == 200"
+  retries: 120
+  delay: 10
+
+- name: Check that you can call readyz endpoint https://{{ inventory_hostname }}:6443/readyz?verbose
+  ansible.builtin.uri:
+    url: https://{{ inventory_hostname }}:6443/readyz?verbose
+    validate_certs: false
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+  register: result
+  until: "result.status == 200"
+  retries: 120
+  delay: 10
+
+- name: Verify connection
+  ansible.builtin.command:
+    kubectl get pod -A
+  when: inventory_hostname == groups['masters'][0]
+  changed_when: false
+  become: false

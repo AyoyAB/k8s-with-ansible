@@ -1,0 +1,16 @@
+---
+- name: Keyboard
+  ansible.builtin.replace:
+    destfile: /etc/default/keyboard
+    regexp: '"gb"'
+    replace: '"sv"'
+
+- name: Ensure a locale exists
+  community.general.locale_gen:
+    name: en_GB.UTF-8
+    state: present
+
+- name: Set locale
+  ansible.builtin.command: 'update-locale LANG=en_GB.UTF-8'
+  register: locale
+  changed_when: true

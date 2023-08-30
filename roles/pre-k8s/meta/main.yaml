@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: cri-install-crio
+    when: container_environment == "crio"
+  - role: cri-install-containerd
+    when: container_environment == "containerd"

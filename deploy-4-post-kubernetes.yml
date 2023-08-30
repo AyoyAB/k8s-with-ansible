@@ -1,5 +1,8 @@
-- hosts: "{{ hosts | default('masters[0]') }}"
+---
+- name: Setup the post k8s with argo-cd
+  hosts: localhost
   any_errors_fatal: true
   roles:
     - name: Run post-kubernetes tasks
       role: 4-post-kubernetes
+      delegate_to: localhost

@@ -1,59 +1,65 @@
-- name: first-master - Reset Kubernetes component
-  become: yes
-  shell: |
+---
+- name: First-master - Reset Kubernetes component
+  become: true
+  ansible.builtin.shell: |
     kubeadm reset \
       --force
   register: reset_cluster
+  changed_when: true
 
-- name: first-master - Flush iptables
+- name: First-master - Flush iptables
   become: true
-  shell: |
+  ansible.builtin.shell: |
     iptables --flush && \
     iptables -tnat --flush
+  changed_when: true
 
-- name: first-master - Init Kubernetes cluster on first master
-  become: yes
-  when: reset_cluster is succeeded
-  shell: |
-    kubeadm init \
-      --service-cidr {{ service_cidr }} \
-      --kubernetes-version {{ kube_version }} \
-      --pod-network-cidr {{ pod_network_cidr }} \
-      --token {{ join_token }} \
-      --apiserver-advertise-address {{ master_ip }} \
-      --upload-certs \
-      --control-plane-endpoint {{ groups['masters'][0] }}:6443 \
-      {{ kubeadm_opts }} \
-      {{ init_opts }}
+- name: First-master - Copy kubeadm config
+  ansible.builtin.template:
+    src: templates/kubeadm-first-master.yaml.j2
+    dest: kubeadm.yaml
+    mode: '600'
   vars:
-    service_cidr:     "10.96.0.0/12"
-    kube_version:     "{{ kubernetes_version | default('stable-1') }}"
-    pod_network_cidr: "10.244.0.0/16"
-    master_ip:        "0.0.0.0"
-    kubeadm_opts:     "--token-ttl 0 "
-    init_opts:        ""
-    join_token:       "{{ token | default('abcdef.0123456789abcdef') }} "
+    service_cidr: "10.96.0.0/12"
+    master_ip: "0.0.0.0"
+
+- name: First-master - Init Kubernetes cluster on first master
+  become: true
+  when: reset_cluster is succeeded
+  ansible.builtin.shell: |
+    kubeadm init \
+      --config kubeadm.yaml \
+      --upload-certs
   register: init_cluster
+  changed_when: true
 
-- debug: var=init_cluster.stdout_lines
+- name: First-master - Show result of cluster initialization.
+  ansible.builtin.debug:
+    var: init_cluster.stdout_lines
 
-- set_fact:
-    certificate_key: "{{ init_cluster.stdout | regex_search(regexp,'\\1') }}"
+- name: First-master - Retrieve the certificate key from kubeadm init
+  ansible.builtin.set_fact:
+    certificate_key: "{{ init_cluster.stdout | regex_search(regexp, '\\1') }}"
   vars:
     regexp: '--certificate-key ([a-f0-9]*)'
 
-- debug: var=certificate_key
+- name: Show the certificate key
+  ansible.builtin.debug:
+    var: certificate_key
 
-- name: first-master - Create Kubernetes config directory
-  become: yes
-  file:
+- name: First-master - Create Kubernetes config directory
+  become: true
+  ansible.builtin.file:
     path: ".kube/"
     state: directory
+    mode: '700'
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
 
-- name: first-master - Copy admin.conf to Home directory
-  become: yes
+- name: First-master - Copy admin config to Home directory
+  become: true
   when: init_cluster is succeeded
-  copy:
+  ansible.builtin.copy:
     src: "{{ kubeadmin_config }}"
     dest: ".kube/config"
     owner: "{{ ansible_user | default(ansible_user_id) }}"
@@ -61,57 +67,73 @@
     mode: 0600
     remote_src: true
 
-
-#- name: Deploy weave network into cluster
-#  become: false
-#  when: init_cluster is succeeded
-#  shell: |
-#    kubectl \
-#        apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-#  register: create_result
-#  until: create_result.rc == 0
-#  retries: 5
-#  delay: 2
-
-# Because of bug in weave the image isn't ARM
-# https://github.com/weaveworks/weave/issues/3842
-- name: first-master - Creates directory ~/weave-net
+- name: First-master - Copy admin config to ansible machine
   become: false
-  file:
-    path: ~/weave-net
-    state: directory
+  ansible.builtin.fetch:
+    src: "~/.kube/config"
+    dest: "{{ k8s_files_kubeconfig }}"
+    flat: true
 
-- name: first-master - Copy over weave configuration
-  template:
-    src: ./templates/{{item}}
-    dest: ~/weave-net/{{item}}
-  with_items:
-    - weave.yaml
+- name: First-master - Approve kubelet certificates
+  delegate_to: localhost
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        get csr \
+        -o json |\
+      jq -r '.items[] | select (.status.conditions == null) | .metadata.name'  |\
+      xargs kubectl --kubeconfig {{ k8s_files_kubeconfig }} \
+        certificate approve
+  register: certificate_approval
+  changed_when: '" approved" in certificate_approval.stdout'
 
-- name: Deploy weave network into cluster
-  become: false
-  when: init_cluster is succeeded
-  shell: |
-    kubectl \
-        apply -f ~/weave-net/weave.yaml
-  register: create_result
-  until: create_result.rc == 0
-  retries: 5
-  delay: 2
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: "probes-api.yaml"
 
-# Wait for the network to be installed before joining the other masters.
-- name: first-master - Wait for 5 seconds before checking if the network is ok.
-  pause:
-    seconds: 5
+- name: First-master - Wait before checking if the system is ok again.
+  ansible.builtin.pause:
+    seconds: 60
 
-- name: first-master - Wait for the network to be installed before joining the other masters.
-  shell: "kubectl -n kube-system get DaemonSet weave-net -o json | jq '.status.numberReady'"
-  register: numberReady
-  until: numberReady.stdout == "1"
-  retries: 12
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: probes-api.yaml
+
+#####################################
+- name: First-master - Install Calico CNI
+  ansible.builtin.include_tasks: "cni-calico.yml"
+  when: k8s_cni == "calico"
+
+- name: First-master - Install weave CNI
+  ansible.builtin.include_tasks: "cni-weave.yml"
+  when: k8s_cni == "weave"
+
+- name: First-master - Verify a valid CNI has been chosen.
+  when:
+    - k8s_cni != "calico"
+    - k8s_cni != "weave"
+  ansible.builtin.fail:
+    msg: "Unsupported CNI configuration: {{ k8s_cni }}"
+#####################################
+
+- name: First-master - Wait for network installation before checking if the system is ok.
+  ansible.builtin.pause:
+    seconds: 180
+
+- name: First-master - Verify all probes is up.
+  ansible.builtin.include_tasks: probes-api.yaml
+
+- name: First-master - Verify all pods are running
+  ansible.builtin.include_tasks: all-pods-running.yaml
+
+- name: First-master - Wait for the DNS to be started (which is implicit that the overlay network works) before joining the other masters.
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail #
+      kubectl -n kube-system get deploy coredns -o json | jq '.status.readyReplicas'
+  changed_when: false
+  register: number_ready
+  until: number_ready.stdout|int > 0
+  retries: 120
   delay: 10
-
-# Wait for the network to be installed before joining the other masters.
-- name: first-master - Wait for the network to be installed before joining the other masters.
-  pause:
-    seconds: 5
