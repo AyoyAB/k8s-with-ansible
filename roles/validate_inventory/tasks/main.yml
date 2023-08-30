@@ -22,9 +22,9 @@
   run_once: true
 
 # This installation script needs at least one node
-- name: Validate inventory has masters.
+- name: Validate inventory has nodes.
   ansible.builtin.fail:
-    msg: "[ERROR] Inventory does not have at least one master."
+    msg: "[ERROR] Inventory does not have at least one node."
   when: (groups.nodes is not defined) or (groups.nodes|length < 1)
   delegate_to: localhost
   run_once: true
