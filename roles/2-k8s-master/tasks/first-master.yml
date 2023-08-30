@@ -53,6 +53,8 @@
     path: ".kube/"
     state: directory
     mode: '700'
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
 
 - name: First-master - Copy admin config to Home directory
   become: true
