@@ -6,8 +6,6 @@
       update-ca-certificates
   changed_when: true
 
-- name: Restart-crio
+- name: Reboot
   become: true
-  ansible.builtin.service:
-    name: crio
-    state: restarted
+  ansible.builtin.reboot:
