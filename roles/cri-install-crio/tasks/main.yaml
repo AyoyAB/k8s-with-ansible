@@ -65,12 +65,12 @@
 - name: Cri-o - Install trusted certificates
   ansible.builtin.template:
     src: templates/registry-certificate.crt
-    dest: "/usr/local/share/ca-certificates/{{ item.host }}.crt"
+    dest: "/etc/ssl/certs/{{ item.host }}.crt"
     mode: '644'
   with_items: "{{ trusted_registry_cas }}"
   notify:
     - Update-ca-certs
-    - Restart-crio
+    - Reboot
 
 - name: Cri-o - Make sure cri-o service unit is running
   ansible.builtin.systemd:
