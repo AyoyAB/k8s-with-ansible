@@ -12,14 +12,14 @@ nodes
 infra1.k8s1.example.com
 
 [masters]
-#master1.k8s1.example.com
+master1.k8s1.example.com
 master2.k8s1.example.com
 #master3.k8s1.example.com
 
 [nodes]
-#node1.k8s1.example.com
-#node2.k8s1.example.com
-#node3.k8s1.example.com
+node1.k8s1.example.com
+node2.k8s1.example.com
+node3.k8s1.example.com
 
 node4.k8s1.example.com
 node5.k8s1.example.com
