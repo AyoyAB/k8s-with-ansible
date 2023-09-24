@@ -20,14 +20,14 @@
     var: ansible_lsb.id
 
 - name: Cri-o - Retrive cri-o version from kubernetes version
-  ansible.builtin.set_fact:
-    kube_minor_version: "{{ kubernetes_version | regex_search('^[0-9]+\\.[0-9]+') }}"
+  ansible.builtin.debug:
+    var: kubernetes_minor_version
   changed_when: false
 
 - name: Cri-o - Set version
   ansible.builtin.set_fact:
-    crio_version: "{{ kube_minor_version }}"
-  when: not kube_minor_version == ""
+    crio_version: "{{ kubernetes_minor_version }}"
+  when: not kubernetes_minor_version == ""
   changed_when: false
 
 - name: Cri-o - Check that cri-o version could be retrieved from kubernetes_version

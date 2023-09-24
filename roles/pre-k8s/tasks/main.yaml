@@ -1,9 +1,11 @@
 ---
+# Note that the Apt signing key is supposed to be constant over versions, so the version
+# in the URL can safely be ignored.
 - name: Add an Apt signing key for Kubernetes repo, uses whichever key is at the URL
   retries: 5
   delay: 5
   ansible.builtin.apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_minor_version }}/deb/Release.key"
     state: present
 
 # Very often the adding of repo below fails when updating the cache.
@@ -15,7 +17,7 @@
 # the error messages are better and retries works...
 - name: Add repo for Kubernetes
   ansible.builtin.apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: deb https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_minor_version }}/deb /
     state: present
     update_cache: false
 
