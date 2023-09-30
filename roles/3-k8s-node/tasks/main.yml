@@ -61,7 +61,7 @@
       kubectl get node {{ item }} -o json |\
         jq -r '.status.conditions[] | select(.type == "Ready") | .status'
   register: node_status
-  until: node_status.stdout_lines[0] == "True"
+  until: node_status.stdout != "" and node_status.stdout_lines[0] == "True"
   with_items: "{{ groups['nodes'] }}"
   delay: 5
   retries: 12
