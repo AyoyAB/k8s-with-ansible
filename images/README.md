@@ -1,35 +1,20 @@
 # Creating images
 
-
-
 ## Create new base image from Raspbian
 Raspbian is the default goto-operating system for Raspberry Pi.
 
-1. Download raspbian lite
-1. In mac, double click on img file.
-1. Open the mounted boot volume in terminal
-1. Create the empty file /boot/ssh
-1. Create the file /boot/wpa_supplicant.conf with the following content
+1.  Download raspbian lite
+2.  In mac, double click on img file.
+3.  Open the mounted boot volume in terminal
+4.  Create the empty file /boot/ssh
+5.  Create the encrypted password for the k8s user:
     ```
-    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-    update_config=1
-    country=sv
-    
-    network={
-        ssid="«your_SSID»"
-        psk="«your_PSK»"
-        key_mgmt=WPA-PSK
-    }
+    echo 'password' | openssl passwd -6 -stdin
     ```
-1. Boot the raspberry and assign a static IP in your DHCP server.
-1. Have fun!
-
-## Create a new base image from Ubuntu for Raspberry PI
-1. Download ubuntu ARM64 image.
-1. Update user-data to set non-expiring passwords.
+5.  Create the file /boot/userconf.txt with `k8s:<encrypted password>`, for example:
     ```
-    chpasswd:
-      expire: false
-      list:
-       - ubuntu:raspberry
+    k8s:$6$KeJyp11i9plG.N66$h5acCGzCAYa62X/uDkC4fh3RQz/imlCMSyCJW6UXPBPeLktIjA7AsG6uhSgmE7PgValHGt5iWrDztvj5E/nGy0
     ```
+6.  Unmount the image and write to SD card.
+7.  Boot the raspberry and assign a static IP in your DHCP server.
+8.  Have fun!
