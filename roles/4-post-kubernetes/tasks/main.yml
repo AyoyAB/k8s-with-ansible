@@ -8,6 +8,7 @@
     api_version: v1
     kind: Namespace
     state: present
+    kubeconfig: "{{ k8s_files_kubeconfig }}"
 
 - name: Install argocd.
   ansible.builtin.include_tasks: argocd-install.yml
