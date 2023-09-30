@@ -1,9 +1,4 @@
 ---
-- name: Restart nginx
-  ansible.builtin.service:
-    name: nginx
-    state: restarted
-
 - name: Restart haproxy
   ansible.builtin.service:
     name: haproxy
