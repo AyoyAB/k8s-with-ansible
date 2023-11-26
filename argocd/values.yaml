@@ -7,6 +7,8 @@ argo-cd:
       requests:
         cpu: 250m
         memory: 1024Mi
+    extraArgs:
+      - '--kubectl-parallelism-limit=5'
   dex:
     resources:
       limits:
